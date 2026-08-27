@@ -113,6 +113,10 @@ Production asset budgets: **23.31 KB JS** (8.73 KB gzip), **17.32 KB CSS**
 
 ## Known gaps / next steps
 
+- The repair commit was pushed to `main` for the Standard static publish. At
+  handoff, the public edge still returned the prior `last-light-v1` worker, so
+  post-publish live-browser verification remains for the factory once the
+  static deployment has propagated.
 - Timing is protected by deterministic simulation and chapter UI smoke tests,
   but the full 35-minute arc has not yet had an external human playtest. Test
   with 5–10 incremental-game players before changing economy constants.
