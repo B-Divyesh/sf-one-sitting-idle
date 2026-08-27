@@ -31,13 +31,16 @@ function loadState(): GameState {
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : 'That save link could not be read.';
       history.replaceState(null, '', location.pathname + location.search);
+      // Do not fall through to (or replace) a valid device save. A bad shared
+      // link should always show the established fresh-start recovery screen.
+      return initialState();
     }
   }
   try {
     const local = localStorage.getItem(STORAGE_KEY);
     if (local) return decodeSave(local);
   } catch {
-    errorMessage = 'Local saving is unavailable. You can still play and copy a save link.';
+    errorMessage = 'The local save could not be read. You can still start a fresh log and copy a save link.';
   }
   return initialState();
 }

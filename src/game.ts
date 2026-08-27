@@ -219,25 +219,73 @@ export function decodeSave(encoded: string): GameState {
     const normalized = encoded.replaceAll('-', '+').replaceAll('_', '/');
     const binary = atob(normalized);
     const packed = JSON.parse(new TextDecoder().decode(Uint8Array.from(binary, (char) => char.charCodeAt(0)))) as PackedSave;
-    if (!Array.isArray(packed) || packed[0] !== GAME_VERSION || packed.length < 14) throw new Error('version');
+    if (!Array.isArray(packed) || packed[0] !== GAME_VERSION || packed.length !== 14) throw new Error('version');
     const [version, act, light, signals, supplies, integrity, stormElapsed, beamMode, upgrades, elapsedMs, clicks, repairs, startedAt, finished] = packed;
     if (![0, 1, 2, 3, 4].includes(act) || ![25, 50, 75].includes(beamMode) || !Array.isArray(upgrades)) throw new Error('shape');
     const validIds = new Set(UPGRADES.map((item) => item.id));
-    if (!upgrades.every((id) => validIds.has(id))) throw new Error('upgrade');
+    if (!upgrades.every((id) => typeof id === 'string' && validIds.has(id)) || new Set(upgrades).size !== upgrades.length) throw new Error('upgrade');
+    validateSaveState({ act, light, signals, supplies, integrity, stormElapsed, upgrades, elapsedMs, clicks, repairs, startedAt, finished });
+    const decodedStartedAt = startedAt === null ? null : safeNumber(startedAt);
     return {
       ...initialState(), version, act, light: safeNumber(light), signals: safeNumber(signals), supplies: safeNumber(supplies),
-      integrity: Math.min(100, safeNumber(integrity)), stormElapsed: Math.min(STORM_DURATION, safeNumber(stormElapsed)), beamMode,
-      upgrades, elapsedMs: safeNumber(elapsedMs), clicks: safeNumber(clicks), repairs: safeNumber(repairs), startedAt,
-      started: act > 0, finished: Boolean(finished), log: rebuildLog(act, upgrades, elapsedMs)
+      integrity: safeNumber(integrity), stormElapsed: safeNumber(stormElapsed), beamMode,
+      upgrades, elapsedMs: safeNumber(elapsedMs), clicks: safeInteger(clicks), repairs: safeInteger(repairs), startedAt: decodedStartedAt,
+      started: act > 0, finished: Boolean(finished), log: rebuildLog(act, upgrades, safeNumber(elapsedMs))
     };
   } catch {
     throw new Error('That save link is damaged or belongs to a different version.');
   }
 }
 
+/**
+ * A save is untrusted input, whether it came from a URL or local storage. These
+ * checks describe reachable game states, rather than merely checking JSON
+ * types, so rendering can safely treat the act as a known game screen.
+ */
+function validateSaveState(save: {
+  act: Act;
+  light: unknown;
+  signals: unknown;
+  supplies: unknown;
+  integrity: unknown;
+  stormElapsed: unknown;
+  upgrades: string[];
+  elapsedMs: unknown;
+  clicks: unknown;
+  repairs: unknown;
+  startedAt: unknown;
+  finished: unknown;
+}): void {
+  const { act, light, signals, supplies, integrity, stormElapsed, upgrades, elapsedMs, clicks, repairs, startedAt, finished } = save;
+  const [safeLight, safeSignals, safeSupplies, safeIntegrity, safeStormElapsed, safeElapsedMs] = [light, signals, supplies, integrity, stormElapsed, elapsedMs].map(safeNumber);
+  const safeClicks = safeInteger(clicks);
+  const safeRepairs = safeInteger(repairs);
+  if (safeIntegrity < 8 || safeIntegrity > 100 || safeStormElapsed > STORM_DURATION) throw new Error('bounds');
+  if (typeof finished !== 'boolean') throw new Error('finished');
+
+  const isFresh = act === 0;
+  if (isFresh) {
+    if (finished || upgrades.length || safeLight !== 0 || safeSignals !== 0 || safeSupplies !== 0 || safeIntegrity !== 100 || safeStormElapsed !== 0 || safeElapsedMs !== 0 || safeClicks !== 0 || safeRepairs !== 0 || startedAt !== null) throw new Error('fresh');
+    return;
+  }
+
+  if (typeof startedAt !== 'number' || !Number.isFinite(startedAt) || startedAt < 0) throw new Error('started');
+  if ((act === 4) !== finished) throw new Error('ending');
+  if (upgrades.some((id) => (UPGRADES.find((item) => item.id === id)?.act ?? 4) > Math.min(act, 3))) throw new Error('upgrade-act');
+
+  if (act === 1 && (safeSignals !== 0 || safeSupplies !== 0 || safeStormElapsed !== 0 || safeIntegrity !== 100)) throw new Error('act-one');
+  if (act === 2 && (safeSupplies !== 0 || safeStormElapsed !== 0 || safeIntegrity !== 100)) throw new Error('act-two');
+  if (act === 4 && safeStormElapsed !== STORM_DURATION) throw new Error('act-four');
+}
+
 function safeNumber(value: unknown): number {
   if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) throw new Error('number');
   return value;
+}
+
+function safeInteger(value: unknown): number {
+  if (!Number.isInteger(value) || (value as number) < 0) throw new Error('integer');
+  return value as number;
 }
 
 function rebuildLog(act: Act, upgrades: string[], elapsedMs: number): GameState['log'] {

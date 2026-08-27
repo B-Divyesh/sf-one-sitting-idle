@@ -1,23 +1,26 @@
 # Handoff — The Last Light
 
-## Independent verification status — **FAIL** (2026-08-27)
+## Repair verification status — **PASS** (2026-08-27)
 
-Candidate `eb638d5f85e724231b12d88fa68dd713097b844c` and the exact matching
-deployment at <https://one-sitting-idle.sociobot.in/> were independently
-verified. The build, unit tests, desktop/mobile browser suite, normal a11y,
-privacy/security, live deployment identity, and bundle budgets pass. The
-release nevertheless **fails** on two P1 defects:
+This repair starts from independently reported candidate
+`eb638d5f85e724231b12d88fa68dd713097b844c` (report commit
+`bd8f465a26c40a15ca73de3020690e92f6d1d7e0`). Both P1 defects are repaired and
+covered by exact production-build browser regressions.
 
-1. The installed service worker cannot run an offline reload: it returns cached
-   HTML to the uncached JS module request, causing a module MIME error.
-2. A syntactically valid but semantically impossible save URL (`act: 4` with
-   `finished: false`) is accepted, overwrites localStorage, then crashes render
-   with `Cannot read properties of undefined (reading 'roman')` instead of
-   presenting invalid-save recovery.
+1. The service worker now precaches the built, hashed JS and CSS entrypoints
+   discovered from the app document. It only serves the cached HTML shell to a
+   navigation request; an uncached asset/module gets a plain-text `503`, never
+   HTML. A browser regression reloads the installed app twice while offline,
+   verifies the app is still interactive, checks a worker update has no waiting
+   worker, and asserts an uncached module response is non-HTML.
+2. Save decoding now checks reachable semantic state as well as JSON shape:
+   exact field count/types, counters and resource bounds, act-specific
+   resources/upgrades, start state, and ending consistency (including the
+   reported `act: 4` / `finished: false` payload). Invalid hash saves return to
+   the existing `Save not loaded` recovery screen before any storage write; a
+   regression confirms a prior valid local save remains byte-for-byte intact.
 
-See `.factory/verification-1.md` for exact reproduction commands, payload,
-passing evidence, live hashes, and remediation. No product code was changed by
-the verifier. Do not ship until both P1 findings are fixed and retested.
+The repair does not change rates, costs, timings, narrative, or balance.
 
 ---
 
@@ -61,26 +64,29 @@ too-short tuning.
 
 ## Verification performed
 
-All commands were run on 2026-08-27 from `/work/repo`:
+All commands were run cleanly on 2026-08-27 from `/work/repo`:
 
 ```bash
 npm install
 npm audit --omit=dev --audit-level=high  # 0 vulnerabilities
-npm test                                 # 6/6 passed
-npm run test:e2e                         # 6/6 desktop + 390px mobile passed
+npm test                                 # 7/7 passed
+npm run test:e2e                         # 10/10 production-build desktop + 390px mobile passed
 npm run build                            # dist/index.html produced
 ```
 
-The factory `verify-url.sh` checked a production `vite preview`: HTTP 200,
-562ms load, no console/page errors, one H1, English language, main landmark,
-all images with alt text, and all buttons named.
+The production-build Playwright suite checks the title, one H1, keyboard start
+and action, local save, no console/page errors in normal play, all story
+chapters/ending, legal pages, invalid-save recovery, and both desktop and
+390×844 mobile layouts. Its Axe WCAG 2 A/AA checks found **0 serious or
+critical issues** on the cover and active game.
 
-Playwright runs Chromium at desktop and 390×844, exercises opening and keyboard
-play, local saves, all three chapter interfaces, ending, invalid-save recovery,
-and both legal pages. Axe WCAG 2 A/AA found **0 serious or critical issues** on
-the cover and active game.
+The same clean browser run registers the production service worker, confirms an
+active controller can check for an update with no waiting worker, then uses
+`context.setOffline(true)` for two consecutive reloads. It verifies an
+uncached module is a plain-text `503`, eliminating the HTML-module MIME
+regression.
 
-Production Lighthouse mobile results:
+A fresh Lighthouse mobile audit of the repaired `vite preview` build reported:
 
 | Category / metric | Result |
 | --- | ---: |
@@ -88,12 +94,12 @@ Production Lighthouse mobile results:
 | Accessibility | 100 |
 | Best practices | 100 |
 | SEO | 100 |
-| First Contentful Paint | 1.0 s |
-| Largest Contentful Paint | 1.1 s |
-| Total Blocking Time | 10 ms |
+| First Contentful Paint | 0.9 s |
+| Largest Contentful Paint | 0.9 s |
+| Total Blocking Time | 0 ms |
 | Cumulative Layout Shift | 0.004 |
 
-Production asset budgets: **22.20 KB JS** (8.36 KB gzip), **17.32 KB CSS**
+Production asset budgets: **23.31 KB JS** (8.73 KB gzip), **17.32 KB CSS**
 (4.72 KB gzip), 95 KB mobile AVIF, no webfonts.
 
 ## Build and deployment

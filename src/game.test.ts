@@ -79,4 +79,11 @@ describe('portable saves', () => {
     expect(encodeSave(state).length).toBeLessThan(300);
     expect(() => decodeSave('not-a-save')).toThrow(/damaged/);
   });
+
+  it('rejects syntactically valid saves that cannot occur in the story', () => {
+    const impossibleEnding = btoa(JSON.stringify([
+      1, 4, 0, 0, 0, 100, 0, 50, [], 0, 0, 0, null, false
+    ])).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
+    expect(() => decodeSave(impossibleEnding)).toThrow(/damaged/);
+  });
 });

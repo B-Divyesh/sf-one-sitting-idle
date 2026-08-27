@@ -30,7 +30,7 @@ test('cover starts a keyboard-playable, locally saved game', async ({ page }, te
 
 test('later chapters expose their distinct controls and ending', async ({ page }) => {
   const urlFor = (act: 2 | 3 | 4, finished = false) => {
-    const packed = [1, act, 5000, act >= 2 ? 900 : 0, act >= 3 ? 20 : 0, 78, act >= 3 ? 360 : 0, 75,
+    const packed = [1, act, 5000, act >= 2 ? 900 : 0, act >= 3 ? 20 : 0, act >= 3 ? 78 : 100, act === 4 ? 900 : act === 3 ? 360 : 0, 75,
       ['wick', 'weight', 'lens', 'pump'], 1_860_000, 120, 4, 1_777_000_000_000, finished];
     return `/?chapter=${act}#save=${Buffer.from(JSON.stringify(packed)).toString('base64url')}`;
   };
@@ -58,4 +58,50 @@ test('legal pages and invalid save state are useful', async ({ page }) => {
   await page.goto('/#save=broken');
   await expect(page.getByRole('alert')).toContainText('Save not loaded');
   await expect(page.getByRole('button', { name: /Open the keeper's log/ })).toBeEnabled();
+});
+
+test('an impossible shared save recovers without replacing a good device save', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: /Open the keeper's log/ }).click();
+  await page.keyboard.press('1');
+  const goodSave = await page.evaluate(() => localStorage.getItem('last-light-save-v1'));
+  expect(goodSave).toBeTruthy();
+
+  // Exact independent-report payload: act IV cannot be unfinished.
+  const impossibleEnding = Buffer.from(JSON.stringify([
+    1, 4, 0, 0, 0, 100, 0, 50, [], 0, 0, 0, null, false
+  ])).toString('base64url');
+  await page.goto(`/#save=${impossibleEnding}`);
+  await page.reload(); // a fragment-only navigation does not re-run the boot loader
+
+  await expect(page.getByRole('alert')).toContainText('Save not loaded');
+  await expect(page.getByRole('button', { name: /Open the keeper's log/ })).toBeEnabled();
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('last-light-save-v1'))).toBe(goodSave);
+});
+
+test('the installed shell reloads repeatedly offline and never answers a module request with HTML', async ({ page, context }) => {
+  await page.goto('/');
+  await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+  await page.reload(); // let the active worker control a page using the precached hashed entrypoints
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+  const updateState = await page.evaluate(async () => {
+    const registration = await navigator.serviceWorker.getRegistration();
+    await registration?.update();
+    return { active: Boolean(registration?.active), waiting: Boolean(registration?.waiting) };
+  });
+  expect(updateState).toEqual({ active: true, waiting: false });
+
+  await context.setOffline(true);
+  await page.reload();
+  await expect(page.getByRole('button', { name: /Open the keeper's log/ })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('button', { name: /Open the keeper's log/ })).toBeVisible();
+
+  const missingModule = await page.evaluate(async () => {
+    const response = await fetch('/assets/uncached-module.js');
+    return { status: response.status, contentType: response.headers.get('content-type'), body: await response.text() };
+  });
+  expect(missingModule.status).toBe(503);
+  expect(missingModule.contentType).toContain('text/plain');
+  expect(missingModule.body).not.toContain('<!doctype html>');
 });
