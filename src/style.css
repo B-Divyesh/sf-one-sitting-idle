@@ -305,9 +305,10 @@ footer p { margin: 0; }
   background: var(--desk);
   box-shadow: 3px 3px 0 var(--lamp);
   font: .75rem var(--mono);
-  transition: transform 220ms ease;
+  transition: transform 220ms ease, opacity 160ms ease;
 }
-.toast.is-visible { transform: translate(-50%, 0); }
+.toast { visibility: hidden; opacity: 0; }
+.toast.is-visible { visibility: visible; opacity: 1; transform: translate(-50%, 0); }
 .toast.is-error { box-shadow: 3px 3px 0 #d9745e; }
 .connection-note { top: 76px; bottom: auto; transform: translateX(-50%); background: var(--danger); }
 .connection-note[hidden] { display: none; }

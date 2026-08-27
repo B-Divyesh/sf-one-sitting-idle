@@ -1,7 +1,7 @@
 export const GAME_VERSION = 1;
 export const ACT_ONE_GOAL = 9000;
-export const ACT_TWO_GOAL = 1800;
-export const STORM_DURATION = 720;
+export const ACT_TWO_GOAL = 2000;
+export const STORM_DURATION = 900;
 
 export type Act = 0 | 1 | 2 | 3 | 4;
 export type BeamMode = 25 | 50 | 75;

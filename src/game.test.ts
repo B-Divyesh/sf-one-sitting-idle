@@ -45,7 +45,7 @@ describe('game progression', () => {
       }
     }
     expect(state.finished).toBe(true);
-    expect(state.elapsedMs / 60000).toBeGreaterThanOrEqual(30);
+    expect(state.elapsedMs / 60000).toBeGreaterThanOrEqual(34);
     expect(state.elapsedMs / 60000).toBeLessThanOrEqual(55);
     expect(transitions).toHaveLength(3);
     expect(state.integrity).toBeGreaterThan(20);

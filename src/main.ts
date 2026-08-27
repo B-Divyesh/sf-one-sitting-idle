@@ -134,7 +134,7 @@ function renderGame(): string {
   const actInfo = {
     1: { roman: 'I', title: 'Kindle', subtitle: 'Make the old light steady.', goal: `${formatNumber(state.light)} / ${ACT_ONE_GOAL.toLocaleString()} light`, prompt: 'The lamp is cold. Give it a beginning.' },
     2: { roman: 'II', title: 'Bearing', subtitle: 'Call the three cutters through.', goal: `${formatNumber(state.signals)} / ${ACT_TWO_GOAL.toLocaleString()} bearings`, prompt: 'The light is strong. Now teach it where to look.' },
-    3: { roman: 'III', title: 'Weather', subtitle: 'Keep the tower standing until dawn.', goal: `${formatDuration(state.stormElapsed * 1000)} / 12:00 storm`, prompt: 'The boats are safe. The storm has come for the lamp.' }
+    3: { roman: 'III', title: 'Weather', subtitle: 'Keep the tower standing until dawn.', goal: `${formatDuration(state.stormElapsed * 1000)} / ${formatDuration(STORM_DURATION * 1000)} storm`, prompt: 'The boats are safe. The storm has come for the lamp.' }
   }[act];
   const progress = actProgress(state) * 100;
   const upgrades = UPGRADES.filter((item) => item.act === act);
