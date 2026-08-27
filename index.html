@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#101b22" />
+    <meta name="description" content="The Last Light is a complete 35–50 minute incremental story. Restore a lighthouse, guide the fleet home, and face the storm. No ads, no endless grind." />
+    <title>The Last Light — a one-sitting idle game</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" as="image" href="/assets/lighthouse-notebook-960.avif" imagesrcset="/assets/lighthouse-notebook-960.avif 960w, /assets/lighthouse-notebook.avif 1536w" imagesizes="(max-width: 820px) calc(100vw - 60px), 700px" type="image/avif" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to the keeper's log</a>
+    <header class="site-header">
+      <a class="wordmark" href="/" aria-label="The Last Light, home">
+        <span aria-hidden="true" class="wordmark-mark">✦</span>
+        <span>The Last Light</span>
+      </a>
+      <nav aria-label="Game tools">
+        <button type="button" class="text-button" id="help-button">How to play</button>
+        <button type="button" class="text-button" id="sound-button" aria-pressed="false">Still waters: off</button>
+        <button type="button" class="text-button" id="save-button">Copy save</button>
+      </nav>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <h1>The Last Light</h1>
+      <p class="deck">One lighthouse. One storm. One sitting.</p>
+      <div id="game" aria-busy="true"></div>
+    </main>
+
+    <footer>
+      <p>A complete 35–50 minute incremental story. No ads. No purchases. No prestige.</p>
+      <p><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · Original generated illustration</p>
+    </footer>
+
+    <div class="connection-note" id="offline-note" role="status" hidden>
+      <span aria-hidden="true">×</span> Offline. Your log is safe on this device.
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <dialog id="help-dialog" aria-labelledby="help-title">
+      <form method="dialog" class="dialog-sheet">
+        <button class="dialog-close" value="close" aria-label="Close instructions">×</button>
+        <p class="eyebrow">Keeper's instructions</p>
+        <h2 id="help-title">Reach dawn in three acts</h2>
+        <ol>
+          <li><strong>Work the mechanism.</strong> Use the large action and buy repairs to automate it.</li>
+          <li><strong>Read the margin.</strong> Each act states its exact goal. Nothing is hidden or random.</li>
+          <li><strong>Change the rules.</strong> The beam and the storm add one new decision each.</li>
+        </ol>
+        <p><kbd>1</kbd> performs the main action. <kbd>2</kbd>–<kbd>4</kbd> buy the first available repairs. <kbd>S</kbd> copies a save link. <kbd>?</kbd> opens this page.</p>
+        <p>Closing the tab earns nothing. A local save remembers the exact state you left.</p>
+        <button class="button button-ink" value="close">Return to the log</button>
+      </form>
+    </dialog>
+
+    <dialog id="restart-dialog" aria-labelledby="restart-title">
+      <form method="dialog" class="dialog-sheet">
+        <p class="eyebrow">Erase this log?</p>
+        <h2 id="restart-title">Begin the night again</h2>
+        <p>Your current local save will be replaced. Copy a save link first if you want to return to it.</p>
+        <div class="dialog-actions">
+          <button class="button button-quiet" value="cancel">Keep this night</button>
+          <button class="button button-danger" id="confirm-restart" value="confirm">Erase and restart</button>
+        </div>
+      </form>
+    </dialog>
+
+    <noscript><p class="noscript">The lighthouse mechanism needs JavaScript to run. Enable it, then reload this page.</p></noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

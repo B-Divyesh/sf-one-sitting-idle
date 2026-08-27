@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://one-sitting-idle.sociobot.in/sitemap.xml
