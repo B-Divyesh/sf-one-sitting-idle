@@ -1,0 +1,16 @@
+{
+  "slug": "one-sitting-idle",
+  "title": "One-Sitting Idle: incremental games designed to end in 30–60 minutes, with a story and no ads",
+  "user": "Incremental/idle fans on HN who like the genre's mechanics but hate endless grinds, dark-pattern monetisation and games that never conclude.",
+  "evidence": [
+    { "url": "https://news.ycombinator.com/item?id=42622627", "date": "2025-01", "quote_or_summary": "A Dark Room has storytelling and an ending, which is uncommon in incremental games." },
+    { "url": "https://news.ycombinator.com/item?id=48516002", "date": "2026-06", "quote_or_summary": "Players want clear, fair progression to an endpoint rather than learning-by-dying mechanics." },
+    { "url": "https://news.ycombinator.com/item?id=47052877", "date": "2026-02", "quote_or_summary": "Positive reception of a roughly 30-minute incremental game with defined levels." },
+    { "url": "https://news.ycombinator.com/item?id=48165343", "date": "2026-05", "quote_or_summary": "Community backlash against ads and micro-donations in an A-Dark-Room-like game." }
+  ],
+  "smallest_useful_product": "One 45-minute lighthouse episode: light to shipping to town to storm finale, with three acts, mechanical twists, a real ending, completion time, and portable local saves.",
+  "success_measure": "At least 40% of starters reach the ending; median completion time 35–60 minutes; at least 25% of finishers play a second episode when released.",
+  "artifact_class": "static-web",
+  "monetization": "The launch episode is free. A one-time paid season may be offered only when later episodes exist; never ads or micro-donations.",
+  "constraints": "Original theme, art and text; telemetry-free playtesting; pure-keyboard play; no prestige loops, daily rewards, ads, IAP, or offline-earnings dark patterns."
+}
