@@ -1,5 +1,26 @@
 # Handoff — The Last Light
 
+## Independent verification status — **FAIL** (2026-08-27)
+
+Candidate `eb638d5f85e724231b12d88fa68dd713097b844c` and the exact matching
+deployment at <https://one-sitting-idle.sociobot.in/> were independently
+verified. The build, unit tests, desktop/mobile browser suite, normal a11y,
+privacy/security, live deployment identity, and bundle budgets pass. The
+release nevertheless **fails** on two P1 defects:
+
+1. The installed service worker cannot run an offline reload: it returns cached
+   HTML to the uncached JS module request, causing a module MIME error.
+2. A syntactically valid but semantically impossible save URL (`act: 4` with
+   `finished: false`) is accepted, overwrites localStorage, then crashes render
+   with `Cannot read properties of undefined (reading 'roman')` instead of
+   presenting invalid-save recovery.
+
+See `.factory/verification-1.md` for exact reproduction commands, payload,
+passing evidence, live hashes, and remediation. No product code was changed by
+the verifier. Do not ship until both P1 findings are fixed and retested.
+
+---
+
 ## What shipped
 
 - A complete, finite three-act incremental story: restore the lamp (**Kindle**),
