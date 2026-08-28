@@ -82,6 +82,7 @@ input:focus-visible {
 .site-header nav a,
 .site-footer nav a { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; }
 .text-button, .link-button {
+  min-width: 44px;
   min-height: 44px;
   padding: 6px 0;
   border: 0;
