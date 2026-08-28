@@ -2,10 +2,11 @@
 
 ## Outcome
 
-**PASS locally.** Every blocking and major finding in
+**PASS and deployed** at <https://one-sitting-idle.sociobot.in/>. Every blocking and major finding in
 `.factory/review-1.md` is repaired. The tested code commits are
 `bea726b0d7bb3bc150238f8a6572cb700750ffe3` and
-`c62ffe93653648a953781aed4d1e1743ce43a36f`.
+`c62ffe93653648a953781aed4d1e1743ce43a36f`. Deployment used pushed source
+commit `8492c702d868f1723bbc51b8970a7b638230e6ab`.
 
 ## Review repairs
 
@@ -95,7 +96,32 @@ npm run test:e2e
 
 The deployed artifact remains a static Vite/TypeScript site in `dist/`.
 
+## Live deployment evidence
+
+`/opt/fleet/lib/deploy-static.sh one-sitting-idle dist` completed successfully
+with Azure deployment ID `a1a616eb-6a54-44f6-a908-aea89cb8f13c`.
+
+- `/`, `/demo`, `/demo/`, `/privacy/`, and `/terms/` return HTTP 200 with their
+  route-specific titles.
+- `/does-not-exist-round-1` returns HTTP 404 and the designed **This log page is
+  missing** page.
+- A fresh 390×844 live browser entered `/?demo=1` at Act II. Reset, offline
+  reload, and **Start for real** left a sentinel real save byte-for-byte
+  unchanged. Exit deleted `demo:last-light-save-v1` only.
+- The entire live browser flow requested only
+  `https://one-sitting-idle.sociobot.in` and recorded zero console/page errors.
+- The live service worker controlled the demo and reloaded **Bearing** offline.
+- Live `verify-url.sh` passed. Live axe CLI reported zero violations across
+  Home, Demo, Privacy, Terms, and 404.
+- Live Lighthouse: Performance 100, Accessibility 100, Best Practices 100,
+  SEO 100, FCP 0.9 s, LCP 0.9 s, TBT 10 ms, CLS 0.
+- CSP, `nosniff`, `no-referrer`, Permissions-Policy, HSTS, and immutable hashed
+  asset caching are present on production responses.
+- Local and live SHA-256 values match for all route HTML, the service worker,
+  both JavaScript files, CSS, and the social image. Representative matches:
+  `index.html` `15646912…e6267`, `demo/index.html` `fe1a7cfa…96f4d`, and
+  `sw.js` `8720a055…c263d`.
+
 ## Known gaps
 
-No known blocking or major review finding remains. Live deployment evidence
-will be appended after the work-order deployment completes.
+No known blocking or major review finding remains.
