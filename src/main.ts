@@ -95,8 +95,11 @@ function render(): void {
     document.title = 'Demo — The Last Light';
     setMeta('link[rel="canonical"]', 'href', `${SITE_ORIGIN}/demo/`);
     setMeta('meta[property="og:title"]', 'content', 'Demo — The Last Light');
+    setMeta('meta[name="description"]', 'content', 'Try a working lighthouse midway through Act II. This sample uses separate browser storage and never changes your game.');
+    setMeta('meta[property="og:description"]', 'content', 'Try a working lighthouse midway through Act II with isolated sample data.');
     setMeta('meta[property="og:url"]', 'content', `${SITE_ORIGIN}/demo/`);
     setMeta('meta[name="twitter:title"]', 'content', 'Demo — The Last Light');
+    setMeta('meta[name="twitter:description"]', 'content', 'Try a working lighthouse midway through Act II with isolated sample data.');
     document.querySelector<HTMLAnchorElement>('.site-header a[href="/demo/"]')?.setAttribute('aria-current', 'page');
   }
   uiSignature = getUiSignature();

@@ -142,7 +142,7 @@ test('@claim:privacy-no-commerce the demo uses only same-origin requests and has
 test('@claim:mobile-layout the first screen and every visible control fit a 390 px phone', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1, name: 'Finish an idle story in one sitting' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Finish a 35–50-minute idle game' })).toBeVisible();
   await expect(page.getByText('For idle-game fans who want a clear ending')).toBeVisible();
   await expect(page.getByRole('link', { name: /Try it with sample data/ })).toBeVisible();
   await expect(page.getByText('Opens a working lighthouse midway through Act II.')).toBeVisible();
@@ -220,7 +220,7 @@ test('@claim:static-artifact every documented route is present in the static bui
 
 test('direct routes expose complete metadata and unknown paths remain 404', async ({ page, request }) => {
   const routes = [
-    ['/', 'The Last Light — finish an idle story', 'https://one-sitting-idle.sociobot.in/'],
+    ['/', 'The Last Light — a 35–50-minute idle game', 'https://one-sitting-idle.sociobot.in/'],
     ['/demo/', 'Demo — The Last Light', 'https://one-sitting-idle.sociobot.in/demo/'],
     ['/privacy/', 'Privacy — The Last Light', 'https://one-sitting-idle.sociobot.in/privacy/'],
     ['/terms/', 'Terms — The Last Light', 'https://one-sitting-idle.sociobot.in/terms/']
@@ -248,7 +248,32 @@ test('site navigation focuses and announces the new heading after forward and ba
   await expect(page.getByRole('heading', { level: 1, name: 'Privacy' })).toBeFocused();
   await expect(page.locator('#route-announcer')).toHaveText('Privacy page loaded');
   await page.goBack();
-  await expect(page.getByRole('heading', { level: 1, name: 'Finish an idle story in one sitting' })).toBeFocused();
+  await expect(page.getByRole('heading', { level: 1, name: 'Finish a 35–50-minute idle game' })).toBeFocused();
+});
+
+test('the one-click query demo supplies its own route metadata', async ({ page }) => {
+  await page.goto('/?demo=1');
+  await expect(page).toHaveTitle('Demo — The Last Light');
+  await expect(page.getByRole('heading', { level: 1, name: 'Guide the lighthouse through Act II' })).toBeVisible();
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://one-sitting-idle.sociobot.in/demo/');
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /separate browser storage/);
+  await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /isolated sample data/);
+  await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute('content', /isolated sample data/);
+});
+
+test('every first-party link resolves to a real static page', async ({ page, request }) => {
+  const routes = ['/', '/demo/', '/privacy/', '/terms/', '/404.html'];
+  const hrefs = new Set<string>();
+  for (const route of routes) {
+    await page.goto(route);
+    for (const href of await page.locator('a[href]').evaluateAll((links) => links.map((link) => link.getAttribute('href')))) {
+      if (href && !href.startsWith('#')) hrefs.add(new URL(href, page.url()).pathname);
+    }
+  }
+  for (const href of hrefs) {
+    const response = await request.get(href, { failOnStatusCode: false });
+    expect(response.status(), href).toBeLessThan(400);
+  }
 });
 
 test('all real routes have no serious accessibility errors or browser errors', async ({ page }) => {

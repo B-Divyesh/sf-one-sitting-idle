@@ -1,13 +1,16 @@
 # Copy audit
 
-Audited 2026-08-28 after the round-one repair. Counts split on spaces. No
-sentence exceeds 22 words. No banned marketing word appears.
+Audited 2026-08-28 for the round-one polish. Counts split on spaces. This
+includes the home first screen, landing sections, shared controls, dialogs,
+demo banner, ending, and README statements. No visitor-facing sentence exceeds
+22 words. No banned marketing word appears. The one product term is
+**35–50-minute idle game**.
 
 ## First screen and cover
 
 | Copy | Words | Result |
 | --- | ---: | --- |
-| Finish an idle story in one sitting | 7 | Pass |
+| Finish a 35–50-minute idle game | 5 | Pass |
 | For idle-game fans who want a clear ending without ads or endless resets. | 12 | Pass |
 | Try it with sample data | 5 | Pass |
 | Start a new game | 4 | Pass |
@@ -21,6 +24,28 @@ sentence exceeds 22 words. No banned marketing word appears.
 
 The headline names the job, the support line names the player, and the adjacent
 sentence explains the sample action. They read aloud as one short instruction.
+
+## Shared navigation, metadata, and dialogs
+
+| Copy | Words | Result |
+| --- | ---: | --- |
+| The Last Light — a 35–50-minute idle game | 6 | Pass |
+| Home | 1 | Pass |
+| Demo | 1 | Pass |
+| Privacy | 1 | Pass |
+| Terms | 1 | Pass |
+| Built by Param Factory | 4 | Pass |
+| Close instructions | 2 | Pass |
+| Reach dawn in three acts | 5 | Pass |
+| The goal and progress appear above the main action. | 9 | Pass |
+| The device save remembers the state you left. | 8 | Pass |
+| Erase this log? | 3 | Pass |
+| Begin the night again | 4 | Pass |
+| Your current device save will be replaced. | 7 | Pass |
+| Copy a save link first if you want to return to it. | 12 | Pass |
+| Erase and restart | 3 | Pass |
+| This log page is missing | 5 | Pass |
+| Return to the game | 4 | Pass |
 
 ## Landing sections and footer
 
@@ -87,3 +112,19 @@ sentence explains the sample action. They read aloud as one short instruction.
 | Shared persistence | save link |
 | Sample mode | demo |
 | Motion setting | motion |
+
+## README statement check
+
+| Copy | Words | Result |
+| --- | ---: | --- |
+| The Last Light is a 35–50-minute idle game for players tired of endless resets. | 12 | Pass |
+| Restore a lighthouse, guide three cutters home, and keep the tower standing. | 12 | Pass |
+| The story ends after the storm. | 6 | Pass |
+| Each act adds one task: automate the lamp, aim the beam, then repair storm damage. | 15 | Pass |
+| The browser saves progress automatically. | 5 | Pass |
+| Copy a save link to continue on another device. | 10 | Pass |
+| Closing the tab earns nothing. | 5 | Pass |
+| After the first visit, the game reloads without a network connection. | 11 | Pass |
+| The game fits a 390 px screen and respects the browser's reduced-motion preference. | 14 | Pass |
+| The game loads no third-party scripts or fonts. | 8 | Pass |
+| It has no accounts, analytics, ads, or purchases. | 9 | Pass |
