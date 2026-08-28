@@ -2,86 +2,80 @@
 
 ## Outcome
 
-**PASS and deployed** at <https://one-sitting-idle.sociobot.in/>. Every blocking and major finding in
-`.factory/review-1.md` is repaired. The tested code commits are
-`bea726b0d7bb3bc150238f8a6572cb700750ffe3` and
-`c62ffe93653648a953781aed4d1e1743ce43a36f`. Deployment used pushed source
-commit `8492c702d868f1723bbc51b8970a7b638230e6ab`.
+**PASS and deployed** at <https://one-sitting-idle.sociobot.in/>.
 
-## Review repairs
+The repair commit is `c2ec5d5aea77bfe91a180ff26fac6a86f9a606f9`
+(`polish: complete review finding closure`), pushed to `origin/main`. It repairs
+the release candidate `884eb54d7eba0d2ebc8edf80fc9ec8c182b23934` using every
+finding in `.factory/review-1.md` and the prior verification reports. The full
+finding-to-change-to-evidence map is in `.factory/polish-1.md`.
 
-- B-01: the first screen now says **Finish an idle story in one sitting**,
-  names idle-game fans, explains the sample action, and shows three tested
-  facts within 390×844.
-- B-02: `/?demo=1` and `/demo/` open a working mid-Act-II lighthouse with
-  six bought repairs and eight log entries. The persistent banner provides
-  **Reset demo** and **Start for real**. Only `demo:*` keys are touched.
-- B-03: `.factory/claims.json` lists 15 retained promises. Each ID occurs in
-  exactly one `@claim:<id>` test and every listed command passed separately
-  in a clean clone.
-- B-04: Demo, Privacy, Terms, and 404 are real multipage build entries. Azure
-  Static Web Apps rewrites missing documents to the styled `404.html` while
-  preserving status 404.
-- M-01: every route has a distinct title, description, canonical, Open Graph,
-  Twitter card, SVG favicon, and 180px touch icon. The social image is a
-  1200×630 crop of the existing original lighthouse art.
-- M-02: every route shares Home/Demo/Privacy/Terms links, the factory credit,
-  and build ID. The landing adds **How it works** and limitations sections.
-  Forward and back navigation focus and announce the page H1.
-- M-03: all visible controls and links measure at least 44×44px at 390px.
-- C-01–C-28: the reviewed wording was replaced and terminology is unified in
-  `.factory/copy-audit.md`. No sentence exceeds 22 words and no banned word
-  remains.
+## What changed in this polish pass
 
-The notebook palette, serif/monospace type, asymmetric paper layout, rust
-controls, and generated lighthouse plate remain the product's visual system.
-`.factory/design.md` records the new social/touch derivatives and provenance.
+- Standardized the public product term as **35–50-minute idle game**. The H1,
+  title, Open Graph/Twitter titles, catalog sentence, and audit now use it.
+- Kept the sample one-click and isolated, and completed its query-string route
+  metadata so `/?demo=1` becomes a genuine Demo page after load.
+- Added browser coverage for query-demo metadata and a crawl of every internal
+  link. The full suite is now 44 tests (22 desktop, 22 mobile).
+- Added `.factory/polish-1.md`, a complete copy audit, and 390px evidence
+  images under `.factory/evidence/`.
 
-## Clean-clone evidence
+The notebook identity is intact: ivory ruled log paper, navy desk, rust controls,
+lamp-yellow focus and progress marks, serif narrative type, mono instruments,
+and the original lighthouse illustration remain product-specific.
 
-Clean clone: `/tmp/one-sitting-idle-final.9Pyevx` at
-`c62ffe93653648a953781aed4d1e1743ce43a36f`.
+## Fresh-clone verification
+
+Fresh clone: `/tmp/one-sitting-idle-polish-clean` at
+`c2ec5d5aea77bfe91a180ff26fac6a86f9a606f9`.
 
 ```text
-npm ci             PASS — 59 packages, 0 vulnerabilities
-npm test           PASS — 7/7 Vitest tests
-npm run build      PASS — dist/index.html and all route documents produced
-npm run test:e2e   PASS — 40/40 desktop + 390×844 browser tests
-verify-url.sh      PASS — title/lang/H1/main/alt/labels, zero console errors
-axe CLI            PASS — 0 violations on Home, Demo, Privacy, Terms, and 404
+npm ci                         PASS — 59 packages, 0 vulnerabilities
+npm test                       PASS — 7/7 Vitest tests
+npm run build                  PASS — static dist/ with all five documents
+desktop Playwright project     PASS — 22/22
+mobile Playwright project      PASS — 22/22
 ```
 
-Every command in `.factory/claims.json` was then executed individually
-against the clean production preview. All 15 passed: duration, ending,
-mechanics, device save, save link, keyboard controls, no offline earnings,
-offline reload, network privacy/no commerce, mobile layout, reduced motion,
-demo isolation, storm duration, generated-art record, and static artifact.
+Every command in `.factory/claims.json` was invoked separately from that clean
+clone. All 15 passed: `duration`, `ending`, `mechanics`, `device-save`,
+`save-link`, `keyboard-controls`, `no-offline-earnings`, `offline-reload`,
+`privacy-no-commerce`, `mobile-layout`, `reduced-motion`, `demo-isolation`,
+`storm-duration`, `generated-art`, and `static-artifact`.
 
-The browser suite also passed direct/reload routing, 404 status, canonical and
-social metadata, focus forward/back, impossible-save recovery, missing-asset
-MIME safety, clipboard round-trip, same-origin-only networking, service-worker
-control, and repeated offline reload.
+The browser coverage includes desktop and 390×844 mobile layout, keyboard
+controls, screen-reader focus/announcements, serious/critical axe checks,
+same-origin request auditing, isolated localStorage, offline service-worker
+reload, invalid-save recovery, real 404 status, metadata, and every first-party
+link.
 
-Lighthouse 13.4.1 mobile against that clean build:
+Production artifact sizes:
 
-| Measure | Result |
-| --- | ---: |
-| Performance | 100 |
-| Accessibility | 100 |
-| Best practices | 100 |
-| SEO | 100 |
-| FCP | 0.9 s |
-| LCP | 1.1 s |
-| TBT | 0 ms |
-| CLS | 0 |
-
-Production budgets:
-
-- JavaScript: 26,590 B raw / 9,696 B gzip total.
+- JavaScript: 27,030 B raw total / 9,005 B gzip.
 - CSS: 21,101 B raw / 5,549 B gzip.
 - Fonts: 0 B.
 - Mobile hero AVIF: 96,698 B.
-- Social image: 240,954 B at 1200×630.
+- Social card: 240,954 B at 1200×630.
+
+## Deployment and cold live checks
+
+Deployed `dist/` with `/opt/fleet/lib/deploy-static.sh one-sitting-idle dist`.
+Azure deployment ID: `58d1270b-d49d-401f-9a1c-ba6793c40b48`.
+
+- Cold `GET /`, `/demo/`, `/privacy/`, and `/terms/` return 200 with their
+  route titles. `/does-not-exist-polish-1` returns 404 and the designed missing
+  log page.
+- A fresh mobile browser opened `/?demo=1`, changed its title to **Demo — The
+  Last Light**, showed the sample banner and Act II state, exercised/reset the
+  sample, and preserved a sentinel `last-light-save-v1` byte-for-byte.
+- The fresh live flow made only same-origin requests and emitted zero console
+  or page errors. Axe via the Playwright integration found zero serious/critical
+  WCAG 2 A/AA violations on Home, Demo, Privacy, Terms, and 404.
+- A fresh controlled live browser reloaded the isolated Demo offline after the
+  service worker installed.
+- Lighthouse 13.4.1 against the live home page: Performance 100, Accessibility
+  100, Best Practices 100, SEO 100; FCP 0.9 s, LCP 0.9 s, TBT 0 ms, CLS 0.
 
 ## Run and deploy
 
@@ -89,39 +83,15 @@ Production budgets:
 npm ci
 npm test
 npm run build
-npm run test:claims
 npm run test:e2e
+npm run test:claims
 /opt/fleet/lib/deploy-static.sh one-sitting-idle dist
 ```
 
-The deployed artifact remains a static Vite/TypeScript site in `dist/`.
-
-## Live deployment evidence
-
-`/opt/fleet/lib/deploy-static.sh one-sitting-idle dist` completed successfully
-with Azure deployment ID `a1a616eb-6a54-44f6-a908-aea89cb8f13c`.
-
-- `/`, `/demo`, `/demo/`, `/privacy/`, and `/terms/` return HTTP 200 with their
-  route-specific titles.
-- `/does-not-exist-round-1` returns HTTP 404 and the designed **This log page is
-  missing** page.
-- A fresh 390×844 live browser entered `/?demo=1` at Act II. Reset, offline
-  reload, and **Start for real** left a sentinel real save byte-for-byte
-  unchanged. Exit deleted `demo:last-light-save-v1` only.
-- The entire live browser flow requested only
-  `https://one-sitting-idle.sociobot.in` and recorded zero console/page errors.
-- The live service worker controlled the demo and reloaded **Bearing** offline.
-- Live `verify-url.sh` passed. Live axe CLI reported zero violations across
-  Home, Demo, Privacy, Terms, and 404.
-- Live Lighthouse: Performance 100, Accessibility 100, Best Practices 100,
-  SEO 100, FCP 0.9 s, LCP 0.9 s, TBT 10 ms, CLS 0.
-- CSP, `nosniff`, `no-referrer`, Permissions-Policy, HSTS, and immutable hashed
-  asset caching are present on production responses.
-- Local and live SHA-256 values match for all route HTML, the service worker,
-  both JavaScript files, CSS, and the social image. Representative matches:
-  `index.html` `15646912…e6267`, `demo/index.html` `fe1a7cfa…96f4d`, and
-  `sw.js` `8720a055…c263d`.
+The artifact remains a static Vite + TypeScript site with `dist/index.html` at
+its root.
 
 ## Known gaps
 
-No known blocking or major review finding remains.
+None. No review, verification, copy, routing, demo, claim, accessibility,
+privacy, offline, mobile, metadata, or deployment finding is deferred.
