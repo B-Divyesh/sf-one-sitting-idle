@@ -1,53 +1,101 @@
-# Handoff — adversarial first-read review 1
+# Handoff — perfection loop round 1
 
 ## Outcome
 
-**FAIL** for <https://one-sitting-idle.sociobot.in/>. The full evidence and
-copy/claims inventories are in `.factory/review-1.md`.
+**PASS locally.** Every blocking and major finding in
+`.factory/review-1.md` is repaired. The tested code commits are
+`bea726b0d7bb3bc150238f8a6572cb700750ffe3` and
+`c62ffe93653648a953781aed4d1e1743ce43a36f`.
 
-Four release-blocking findings were recorded:
+## Review repairs
 
-1. The first screen does not identify the intended player or use a job headline.
-2. There is no one-click sample demo; `/demo` reads the normal save namespace.
-3. `.factory/claims.json` and `@claim:*` tests are absent.
-4. Unknown paths return the home page with HTTP 200; there is no designed 404.
+- B-01: the first screen now says **Finish an idle story in one sitting**,
+  names idle-game fans, explains the sample action, and shows three tested
+  facts within 390×844.
+- B-02: `/?demo=1` and `/demo/` open a working mid-Act-II lighthouse with
+  six bought repairs and eight log entries. The persistent banner provides
+  **Reset demo** and **Start for real**. Only `demo:*` keys are touched.
+- B-03: `.factory/claims.json` lists 15 retained promises. Each ID occurs in
+  exactly one `@claim:<id>` test and every listed command passed separately
+  in a clean clone.
+- B-04: Demo, Privacy, Terms, and 404 are real multipage build entries. Azure
+  Static Web Apps rewrites missing documents to the styled `404.html` while
+  preserving status 404.
+- M-01: every route has a distinct title, description, canonical, Open Graph,
+  Twitter card, SVG favicon, and 180px touch icon. The social image is a
+  1200×630 crop of the existing original lighthouse art.
+- M-02: every route shares Home/Demo/Privacy/Terms links, the factory credit,
+  and build ID. The landing adds **How it works** and limitations sections.
+  Forward and back navigation focus and announce the page H1.
+- M-03: all visible controls and links measure at least 44×44px at 390px.
+- C-01–C-28: the reviewed wording was replaced and terminology is unified in
+  `.factory/copy-audit.md`. No sentence exceeds 22 words and no banned word
+  remains.
 
-The report also records missing social/canonical metadata, inconsistent site
-navigation and footer structure, absent route-change focus, sub-44 px mobile
-targets, and specific copy issues with proposed rewrites.
+The notebook palette, serif/monospace type, asymmetric paper layout, rust
+controls, and generated lighthouse plate remain the product's visual system.
+`.factory/design.md` records the new social/touch derivatives and provenance.
 
-## What changed
+## Clean-clone evidence
 
-- Added `.factory/review-1.md`.
-- Replaced this handoff with the review-specific result.
-- Did not modify product code, configuration, dependencies, or generated assets.
-
-## Verification performed
-
-The live site was checked in fresh 390×844 and 1440×900 Chromium contexts. The
-review exercised the normal first click, `/demo`, `/?demo=1`, real-save isolation,
-offline reload, same-origin request behavior, legal routes, an unknown route,
-link traversal, keyboard focus, route/back focus, mobile target sizes, metadata,
-console output, and axe.
-
-A separate clean clone at commit
-`ab4fa6ac607186b192886abb501d6c7a73b18e81` produced:
+Clean clone: `/tmp/one-sitting-idle-final.9Pyevx` at
+`c62ffe93653648a953781aed4d1e1743ce43a36f`.
 
 ```text
-npm ci             PASS
-npm test           PASS — 7/7
-npm run test:e2e   PASS — 10/10
-npm run build      PASS — dist/ produced, 8.73 kB gzip JavaScript
+npm ci             PASS — 59 packages, 0 vulnerabilities
+npm test           PASS — 7/7 Vitest tests
+npm run build      PASS — dist/index.html and all route documents produced
+npm run test:e2e   PASS — 40/40 desktop + 390×844 browser tests
+verify-url.sh      PASS — title/lang/H1/main/alt/labels, zero console errors
+axe CLI            PASS — 0 violations on Home, Demo, Privacy, Terms, and 404
 ```
 
-`/opt/fleet/lib/verify-url.sh` passed its basic live checks. Live axe scans found
-zero violations on the checked routes. Warmed offline reload and same-origin-only
-requests passed manual interception, but both remain unlisted claims.
+Every command in `.factory/claims.json` was then executed individually
+against the clean production preview. All 15 passed: duration, ending,
+mechanics, device save, save link, keyboard controls, no offline earnings,
+offline reload, network privacy/no commerce, mobile layout, reduced motion,
+demo isolation, storm duration, generated-art record, and static artifact.
 
-## Known gaps and next steps
+The browser suite also passed direct/reload routing, 404 status, canonical and
+social metadata, focus forward/back, impossible-save recovery, missing-asset
+MIME safety, clipboard round-trip, same-origin-only networking, service-worker
+control, and repeated offline reload.
 
-The review found no claims registry, so there were no listed claim commands to
-run. The passing general tests do not satisfy that contract. Repair work should
-start with the isolated seeded demo and claim registry, then first-screen copy and
-real 404 routing. After repair, rerun every registered claim from a fresh clone and
-repeat this review in clean phone and desktop contexts.
+Lighthouse 13.4.1 mobile against that clean build:
+
+| Measure | Result |
+| --- | ---: |
+| Performance | 100 |
+| Accessibility | 100 |
+| Best practices | 100 |
+| SEO | 100 |
+| FCP | 0.9 s |
+| LCP | 1.1 s |
+| TBT | 0 ms |
+| CLS | 0 |
+
+Production budgets:
+
+- JavaScript: 26,590 B raw / 9,696 B gzip total.
+- CSS: 21,101 B raw / 5,549 B gzip.
+- Fonts: 0 B.
+- Mobile hero AVIF: 96,698 B.
+- Social image: 240,954 B at 1200×630.
+
+## Run and deploy
+
+```bash
+npm ci
+npm test
+npm run build
+npm run test:claims
+npm run test:e2e
+/opt/fleet/lib/deploy-static.sh one-sitting-idle dist
+```
+
+The deployed artifact remains a static Vite/TypeScript site in `dist/`.
+
+## Known gaps
+
+No known blocking or major review finding remains. Live deployment evidence
+will be appended after the work-order deployment completes.
