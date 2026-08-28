@@ -1,5 +1,34 @@
 # Handoff — perfection loop round 1
 
+## Review 2 update
+
+**PASS — no product code changed.** The independent adversarial review is in
+`.factory/review-2.md`; this handoff update records the review evidence.
+
+- Fresh 390 × 844 and desktop live contexts confirmed that the first viewport
+  states the job, audience, first click, outcome, and three facts.
+- The live one-click demo opened seeded Act II data; Reset demo and Start for
+  real preserved a sentinel real save; only same-origin requests occurred; and
+  the demo reloaded offline after service-worker control.
+- In fresh clone `/tmp/one-sitting-idle-review-2-F000or`, `npm ci`, `npm test`
+  (7/7), `npm run build`, `npm run test:e2e` (44/44), and all 15 listed claim
+  selectors passed.
+- Route, metadata, 404, link, focus/back, console, copy, accessibility, visual
+  identity, and prior-finding checks passed. No known gaps remain.
+
+Run locally with:
+
+```bash
+npm ci
+npm test
+npm run build
+npm run test:e2e
+npm run test:claims
+```
+
+Direct demo: `/demo/`. This review is not deployment authorization; deployment
+remains the factory's responsibility.
+
 ## Outcome
 
 **PASS and deployed** at <https://one-sitting-idle.sociobot.in/>.
