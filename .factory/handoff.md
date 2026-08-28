@@ -1,5 +1,30 @@
 # Handoff — The Last Light
 
+## Independent candidate verification — **PASS** (2026-08-28)
+
+**Verified commit:** `0f1f957b3c8f21b4479c134ac40c01b72fa8bb43`
+**Verified deployment:** <https://one-sitting-idle.sociobot.in/>
+
+A fresh, code-independent QA pass is recorded in
+`.factory/verification-2.md`. It installed from the lockfile, passed all
+available gates (`npm test` 7/7, exact `npm run build`, and production-build
+`npm run test:e2e` 10/10), independently exercised normal/keyboard/recovery
+paths, and confirmed the live deployment byte-for-byte against the production
+artifact. No P0/P1/P2/P3 defects were found.
+
+Fresh live evidence: desktop and 390px reduced-motion Chromium checks had zero
+normal-play console/page errors, zero axe serious/critical issues, visible
+3px focus, and same-origin-only requests; the controlled `last-light-v3`
+worker updates without waiting and reloads offline. The former bad semantic
+save URL now recovers without overwriting a good local save. Lighthouse mobile
+on the exact production preview was Performance/A11y/Best Practices/SEO
+**100/100/100/100** (FCP 1.0s, LCP 1.1s, TBT 80ms, CLS 0.004). The detailed
+hashes, response policies, cache behavior, budgets, and test evidence are in
+the verification report.
+
+**Current handoff status: PASS.** No release-blocking known gaps. The only
+non-blocking next step is the previously noted external human balance playtest.
+
 ## Repair verification status — **PASS** (2026-08-28)
 
 This repair starts from independently reported candidate
