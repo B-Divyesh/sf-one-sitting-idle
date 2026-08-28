@@ -3,19 +3,24 @@ import AxeBuilder from '@axe-core/playwright';
 
 test('cover starts a keyboard-playable, locally saved game', async ({ page }, testInfo) => {
   const errors: string[] = [];
+  const requestOrigins = new Set<string>();
   page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
   page.on('pageerror', (error) => errors.push(error.message));
+  page.on('request', (request) => requestOrigins.add(new URL(request.url()).origin));
 
   await page.goto('/');
   await expect(page).toHaveTitle(/The Last Light/);
   await expect(page.locator('h1')).toHaveCount(1);
   await expect(page.getByRole('button', { name: /Open the keeper's log/ })).toBeVisible();
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('link', { name: "Skip to the keeper's log" })).toBeFocused();
   await page.screenshot({ path: testInfo.outputPath('cover.png'), fullPage: true });
 
   const coverAxe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
   expect(coverAxe.violations.filter((item) => ['serious', 'critical'].includes(item.impact ?? ''))).toEqual([]);
 
-  await page.getByRole('button', { name: /Open the keeper's log/ }).click();
+  await page.getByRole('button', { name: /Open the keeper's log/ }).focus();
+  await page.keyboard.press('Enter');
   await expect(page.getByRole('heading', { name: 'Kindle' })).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath('act-one.png'), fullPage: true });
   await page.keyboard.press('1');
@@ -26,6 +31,7 @@ test('cover starts a keyboard-playable, locally saved game', async ({ page }, te
   const gameAxe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
   expect(gameAxe.violations.filter((item) => ['serious', 'critical'].includes(item.impact ?? ''))).toEqual([]);
   expect(errors).toEqual([]);
+  expect([...requestOrigins]).toEqual([new URL(page.url()).origin]);
 });
 
 test('later chapters expose their distinct controls and ending', async ({ page }) => {
@@ -79,7 +85,7 @@ test('an impossible shared save recovers without replacing a good device save', 
   await expect.poll(() => page.evaluate(() => localStorage.getItem('last-light-save-v1'))).toBe(goodSave);
 });
 
-test('the installed shell reloads repeatedly offline and never answers a module request with HTML', async ({ page, context }) => {
+test('the installed shell reloads repeatedly offline and never answers an asset request with HTML', async ({ page, context }) => {
   await page.goto('/');
   await page.evaluate(async () => { await navigator.serviceWorker.ready; });
   await page.reload(); // let the active worker control a page using the precached hashed entrypoints
@@ -91,17 +97,43 @@ test('the installed shell reloads repeatedly offline and never answers a module 
   });
   expect(updateState).toEqual({ active: true, waiting: false });
 
+  // Vite's history fallback returns index.html for an unknown /assets/* URL.
+  // The service worker must reject that online response too: a missing module
+  // must never receive HTML merely because the network happens to be present.
+  const onlineMissingAsset = await page.evaluate(async () => {
+    const response = await fetch('/assets/uncached-module-online.js');
+    return { status: response.status, contentType: response.headers.get('content-type'), body: await response.text() };
+  });
+  expect(onlineMissingAsset.status).toBe(503);
+  expect(onlineMissingAsset.contentType).toContain('text/plain');
+  expect(onlineMissingAsset.body).not.toContain('<!doctype html>');
+
+  // An older worker could cache that same history fallback under an asset URL.
+  // A cache-version update and the response guard must prevent it from being
+  // replayed as a JavaScript module after the repair ships.
+  const cachedHtmlAsset = await page.evaluate(async () => {
+    const oldCache = await caches.open('last-light-v2');
+    await oldCache.put('/assets/cached-html-module.js', new Response('<!doctype html><title>fallback</title>', {
+      headers: { 'content-type': 'text/html; charset=utf-8' }
+    }));
+    const response = await fetch('/assets/cached-html-module.js');
+    return { status: response.status, contentType: response.headers.get('content-type'), body: await response.text() };
+  });
+  expect(cachedHtmlAsset.status).toBe(503);
+  expect(cachedHtmlAsset.contentType).toContain('text/plain');
+  expect(cachedHtmlAsset.body).not.toContain('<!doctype html>');
+
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByRole('button', { name: /Open the keeper's log/ })).toBeVisible();
   await page.reload();
   await expect(page.getByRole('button', { name: /Open the keeper's log/ })).toBeVisible();
 
-  const missingModule = await page.evaluate(async () => {
-    const response = await fetch('/assets/uncached-module.js');
+  const offlineMissingAsset = await page.evaluate(async () => {
+    const response = await fetch('/assets/uncached-module-offline.js');
     return { status: response.status, contentType: response.headers.get('content-type'), body: await response.text() };
   });
-  expect(missingModule.status).toBe(503);
-  expect(missingModule.contentType).toContain('text/plain');
-  expect(missingModule.body).not.toContain('<!doctype html>');
+  expect(offlineMissingAsset.status).toBe(503);
+  expect(offlineMissingAsset.contentType).toContain('text/plain');
+  expect(offlineMissingAsset.body).not.toContain('<!doctype html>');
 });

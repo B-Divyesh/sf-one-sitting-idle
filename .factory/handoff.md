@@ -1,19 +1,24 @@
 # Handoff — The Last Light
 
-## Repair verification status — **PASS** (2026-08-27)
+## Repair verification status — **PASS** (2026-08-28)
 
 This repair starts from independently reported candidate
 `eb638d5f85e724231b12d88fa68dd713097b844c` (report commit
 `bd8f465a26c40a15ca73de3020690e92f6d1d7e0`). Both P1 defects are repaired and
-covered by exact production-build browser regressions.
+covered by exact production-build browser regressions. This follow-up also
+closes an online form of the service-worker MIME failure and makes clean
+browser validation reproducible by pinning Playwright to the supplied 1.58.2
+browser revision.
 
-1. The service worker now precaches the built, hashed JS and CSS entrypoints
-   discovered from the app document. It only serves the cached HTML shell to a
-   navigation request; an uncached asset/module gets a plain-text `503`, never
-   HTML. A browser regression reloads the installed app twice while offline,
-   verifies the app is still interactive, checks a worker update has no waiting
-   worker, and asserts an uncached module response is non-HTML.
-2. Save decoding now checks reachable semantic state as well as JSON shape:
+1. The service worker (cache `last-light-v3`) precaches the built, hashed JS
+   and CSS entrypoints discovered from the app document. It only serves the
+   cached HTML shell to a navigation request; an uncached asset/module gets a
+   plain-text `503`, never HTML. This also rejects a static-host history
+   fallback while online and any HTML response left in an old cache, before it
+   can be replayed as a JavaScript module. A browser regression checks both
+   response paths, reloads the installed app twice while offline, verifies it
+   remains interactive, and checks an update has no waiting worker.
+2. Save decoding checks reachable semantic state as well as JSON shape:
    exact field count/types, counters and resource bounds, act-specific
    resources/upgrades, start state, and ending consistency (including the
    reported `act: 4` / `finished: false` payload). Invalid hash saves return to
@@ -64,29 +69,36 @@ too-short tuning.
 
 ## Verification performed
 
-All commands were run cleanly on 2026-08-27 from `/work/repo`:
+All commands were rerun cleanly on 2026-08-28 from `/work/repo`:
 
 ```bash
-npm install
+npm ci
 npm audit --omit=dev --audit-level=high  # 0 vulnerabilities
 npm test                                 # 7/7 passed
 npm run test:e2e                         # 10/10 production-build desktop + 390px mobile passed
-npm run build                            # dist/index.html produced
+npm run build                            # includes tsc --noEmit; dist/index.html produced
 ```
 
-The production-build Playwright suite checks the title, one H1, keyboard start
-and action, local save, no console/page errors in normal play, all story
-chapters/ending, legal pages, invalid-save recovery, and both desktop and
-390×844 mobile layouts. Its Axe WCAG 2 A/AA checks found **0 serious or
-critical issues** on the cover and active game.
+The repository has no separate lint configuration; the strict TypeScript
+typecheck is the first stage of `npm run build`. This is a static site, so no
+package/consumer artifact applies beyond the generated `dist/` directory.
+
+The production-build Playwright suite checks the title, one H1, visible skip
+link focus, keyboard start and action, local save, no console/page errors in
+normal play, all story chapters/ending, legal pages, invalid-save recovery,
+and both desktop and 390×844 mobile layouts. Its Axe WCAG 2 A/AA checks found
+**0 serious or critical issues** on the cover and active game.
 
 The same clean browser run registers the production service worker, confirms an
-active controller can check for an update with no waiting worker, then uses
-`context.setOffline(true)` for two consecutive reloads. It verifies an
-uncached module is a plain-text `503`, eliminating the HTML-module MIME
-regression.
+active controller can check for an update with no waiting worker, rejects an
+online history-fallback response and a deliberately poisoned old cache entry
+for `/assets/*.js`, then uses `context.setOffline(true)` for two consecutive
+reloads. Every missing asset response is a plain-text `503`, eliminating the
+HTML-module MIME regression in both network states.
 
-A fresh Lighthouse mobile audit of the repaired `vite preview` build reported:
+A fresh Lighthouse 12.8.2 mobile audit of the repaired `vite preview` build
+(`CHROME_PATH` set to the supplied Chromium and `bf-cache` excluded because the
+root-run Chrome process closes during that audit) reported:
 
 | Category / metric | Result |
 | --- | ---: |
@@ -95,16 +107,19 @@ A fresh Lighthouse mobile audit of the repaired `vite preview` build reported:
 | Best practices | 100 |
 | SEO | 100 |
 | First Contentful Paint | 0.9 s |
-| Largest Contentful Paint | 0.9 s |
+| Largest Contentful Paint | 1.0 s |
 | Total Blocking Time | 0 ms |
 | Cumulative Layout Shift | 0.004 |
 
-Production asset budgets: **23.31 KB JS** (8.73 KB gzip), **17.32 KB CSS**
-(4.72 KB gzip), 95 KB mobile AVIF, no webfonts.
+Production asset budgets: **23.31 KB JS** (8.71 KB gzip), **17.32 KB CSS**
+(4.73 KB gzip), 95 KB mobile AVIF, no webfonts. No runtime network request
+leaves the origin; live header checks confirm HSTS, CSP, `nosniff`,
+`Referrer-Policy: no-referrer`, and the restrictive Permissions Policy.
 
 ## Build and deployment
 
-- Install: `npm install` (or `npm ci`)
+- Install: `npm ci` (Playwright is pinned to `@playwright/test` 1.58.2 to
+  match the supplied Chromium)
 - Develop: `npm run dev`
 - Unit tests: `npm test`
 - Browser/a11y tests: `npx playwright install chromium && npm run test:e2e`
@@ -113,10 +128,9 @@ Production asset budgets: **23.31 KB JS** (8.73 KB gzip), **17.32 KB CSS**
 
 ## Known gaps / next steps
 
-- The repair commit was pushed to `main` for the Standard static publish. At
-  handoff, the public edge still returned the prior `last-light-v1` worker, so
-  post-publish live-browser verification remains for the factory once the
-  static deployment has propagated.
+- The repair commit is ready for the Standard static publish from `./dist`.
+  Recheck the public worker contains `last-light-v3` after the deployment
+  propagates; it will replace the live `last-light-v2` worker.
 - Timing is protected by deterministic simulation and chapter UI smoke tests,
   but the full 35-minute arc has not yet had an external human playtest. Test
   with 5–10 incremental-game players before changing economy constants.

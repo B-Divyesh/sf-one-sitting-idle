@@ -23,10 +23,10 @@ See `.factory/brief.json` for the researched problem this solves and `.factory/d
 ## Develop
 
 ```bash
-npm install
+npm ci
 npm run dev
 npm test
-npm run test:e2e  # installs/uses a Playwright Chromium browser
+npm run test:e2e  # uses the pinned Playwright 1.58.2 Chromium
 npm run build     # output: dist/
 ```
 

@@ -1,4 +1,4 @@
-const CACHE = 'last-light-v2';
+const CACHE = 'last-light-v3';
 const SHELL = ['/', '/privacy/', '/terms/', '/favicon.svg', '/assets/lighthouse-notebook-960.avif', '/assets/lighthouse-notebook-960.webp', '/assets/lighthouse-notebook.jpg'];
 
 async function precacheShell() {
@@ -36,14 +36,26 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET' || new URL(event.request.url).origin !== location.origin) return;
   const isNavigation = event.request.mode === 'navigate';
+  const pathname = new URL(event.request.url).pathname;
+  const isStaticAsset = pathname.startsWith('/assets/') || ['script', 'style', 'image', 'font'].includes(event.request.destination);
   event.respondWith((async () => {
     // Vite preview/SWA can add `Vary: Origin`; this worker itself fetched the
     // precache without that request header. It is still safe to ignore Vary
     // here because this cache contains only same-origin, public app assets.
     const cached = await caches.match(event.request, { ignoreSearch: isNavigation, ignoreVary: true });
-    if (cached) return cached;
+    if (cached) {
+      // A previous worker could have cached a static-host HTML fallback under
+      // an asset URL. Do not let that poisoned entry survive an update.
+      if (isStaticAsset && cached.headers.get('content-type')?.includes('text/html')) return offlineResponse();
+      return cached;
+    }
     try {
       const response = await fetch(event.request);
+      // A static host's navigation fallback can return the app document with
+      // a 200 for an unknown /assets/* URL. That is just as fatal as doing so
+      // offline: an ES module receives HTML and fails its MIME check. Keep
+      // document fallbacks exclusive to navigations, even while online.
+      if (isStaticAsset && response.headers.get('content-type')?.includes('text/html')) return offlineResponse();
       if (response.ok) void caches.open(CACHE).then((cache) => cache.put(event.request, response.clone()));
       return response;
     } catch {
