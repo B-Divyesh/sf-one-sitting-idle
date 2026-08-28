@@ -116,6 +116,14 @@ Production asset budgets: **23.31 KB JS** (8.71 KB gzip), **17.32 KB CSS**
 leaves the origin; live header checks confirm HSTS, CSP, `nosniff`,
 `Referrer-Policy: no-referrer`, and the restrictive Permissions Policy.
 
+After deployment, a fresh 390×844 Chromium context against
+`https://one-sitting-idle.sociobot.in/` installed and controlled the
+`last-light-v3` worker, performed an online missing-asset request (`503`,
+plain text, non-HTML), reloaded while offline with the game title intact, and
+performed the offline missing-asset request (`503`, plain text, non-HTML).
+There were no page errors. The live document identity was also checked for its
+`lang="en"`, title, and `main` landmark.
+
 ## Build and deployment
 
 - Install: `npm ci` (Playwright is pinned to `@playwright/test` 1.58.2 to
@@ -125,12 +133,12 @@ leaves the origin; live header checks confirm HSTS, CSP, `nosniff`,
 - Browser/a11y tests: `npx playwright install chromium && npm run test:e2e`
 - Required build command: `npm run build`
 - Required deploy directory: `./dist` (`dist/index.html` is present)
+- Deployed: 2026-08-28 with Azure Static Web Apps CLI 2.0.6 to production app
+  `sf-one-sitting-idle` / `nice-stone-043ef630f.7.azurestaticapps.net`; the
+  public custom domain now serves `last-light-v3`.
 
 ## Known gaps / next steps
 
-- The repair commit is ready for the Standard static publish from `./dist`.
-  Recheck the public worker contains `last-light-v3` after the deployment
-  propagates; it will replace the live `last-light-v2` worker.
 - Timing is protected by deterministic simulation and chapter UI smoke tests,
   but the full 35-minute arc has not yet had an external human playtest. Test
   with 5–10 incremental-game players before changing economy constants.
