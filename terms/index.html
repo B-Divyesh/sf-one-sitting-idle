@@ -2,20 +2,34 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#101b22" />
     <meta name="description" content="Terms of use for The Last Light." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="The Last Light" />
+    <meta property="og:title" content="Terms — The Last Light" />
+    <meta property="og:description" content="Terms for playing and sharing The Last Light." />
+    <meta property="og:url" content="https://one-sitting-idle.sociobot.in/terms/" />
+    <meta property="og:image" content="https://one-sitting-idle.sociobot.in/assets/the-last-light-social.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Terms — The Last Light" />
+    <meta name="twitter:description" content="Terms for playing and sharing The Last Light." />
+    <meta name="twitter:image" content="https://one-sitting-idle.sociobot.in/assets/the-last-light-social.jpg" />
     <title>Terms — The Last Light</title>
+    <link rel="canonical" href="https://one-sitting-idle.sociobot.in/terms/" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body class="legal-body">
     <a class="skip-link" href="#main">Skip to terms</a>
-    <header class="site-header"><a class="wordmark" href="/"><span aria-hidden="true" class="wordmark-mark">✦</span><span>The Last Light</span></a><nav aria-label="Legal pages"><a href="/privacy/">Privacy</a></nav></header>
+    <header class="site-header"><a class="wordmark" href="/" aria-label="The Last Light, home"><span aria-hidden="true" class="wordmark-mark">✦</span><span>The Last Light</span></a><nav aria-label="Site"><a href="/demo/">Demo</a><a href="/privacy/">Privacy</a><a href="/terms/" aria-current="page">Terms</a></nav></header>
     <main id="main" class="legal-page">
       <p class="eyebrow">Terms of use · Effective 27 August 2026</p>
-      <h1>Terms</h1>
-      <p class="legal-lead">This is a free, complete browser game. Play it, finish it, and keep or share your save link.</p>
+      <h1 tabindex="-1">Terms</h1>
+      <p class="legal-lead">This 35–50-minute idle game is free. Play it, finish it, and keep or share your save link.</p>
       <h2>Using the game</h2>
       <p>You may use The Last Light for personal, non-commercial play. Do not attempt to disrupt its hosting, use it to distribute harmful content, or falsely claim the game's story or artwork as your own.</p>
       <h2>No purchases or accounts</h2>
@@ -26,6 +40,8 @@
       <p>The setting, copy, interface, and generated lighthouse illustration were created for this product. Source code is available under the MIT License in the repository; visual and narrative assets are not granted additional rights beyond what that repository license states.</p>
       <p><a class="button button-ink" href="/">Return to the lighthouse</a></p>
     </main>
-    <footer><p>The Last Light · a finite machine</p><p><a href="/">Game</a> · <a href="/privacy/">Privacy</a></p></footer>
+    <footer class="site-footer"><p>Finish a 35–50-minute idle game with no endless resets.</p><nav aria-label="Footer"><a href="/">Home</a><a href="/demo/">Demo</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav><p>Built by Param Factory · Build 1.1.0 · Generated illustration</p></footer>
+    <div class="route-announcer visually-hidden" id="route-announcer" aria-live="polite" aria-atomic="true"></div>
+    <script type="module" src="/src/navigation.ts"></script>
   </body>
 </html>

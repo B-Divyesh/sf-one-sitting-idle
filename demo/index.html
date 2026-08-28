@@ -4,82 +4,58 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#101b22" />
-    <meta name="description" content="Finish a 35–50-minute idle game in one sitting. Restore a lighthouse, guide three cutters home, and outlast the storm." />
+    <meta name="description" content="Try a working lighthouse midway through Act II. This sample uses separate browser storage and never changes your game." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="The Last Light" />
-    <meta property="og:title" content="The Last Light — finish an idle story" />
-    <meta property="og:description" content="Finish a 35–50-minute lighthouse game with a clear ending and no ads." />
-    <meta property="og:url" content="https://one-sitting-idle.sociobot.in/" />
+    <meta property="og:title" content="Demo — The Last Light" />
+    <meta property="og:description" content="Try a working lighthouse midway through Act II with isolated sample data." />
+    <meta property="og:url" content="https://one-sitting-idle.sociobot.in/demo/" />
     <meta property="og:image" content="https://one-sitting-idle.sociobot.in/assets/the-last-light-social.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="The Last Light — finish an idle story" />
-    <meta name="twitter:description" content="Finish a 35–50-minute lighthouse game with a clear ending and no ads." />
+    <meta name="twitter:title" content="Demo — The Last Light" />
+    <meta name="twitter:description" content="Try a working lighthouse midway through Act II with isolated sample data." />
     <meta name="twitter:image" content="https://one-sitting-idle.sociobot.in/assets/the-last-light-social.jpg" />
-    <title>The Last Light — finish an idle story</title>
-    <link rel="canonical" href="https://one-sitting-idle.sociobot.in/" />
+    <title>Demo — The Last Light</title>
+    <link rel="canonical" href="https://one-sitting-idle.sociobot.in/demo/" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="preload" as="image" href="/assets/lighthouse-notebook-960.avif" imagesrcset="/assets/lighthouse-notebook-960.avif 960w, /assets/lighthouse-notebook.avif 1536w" imagesizes="(max-width: 820px) calc(100vw - 60px), 700px" type="image/avif" />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
-  <body>
-    <a class="skip-link" href="#main">Skip to the keeper's log</a>
-    <aside class="demo-banner" id="demo-banner" aria-label="Demo mode" hidden>
+  <body class="demo-mode">
+    <a class="skip-link" href="#main">Skip to the sample lighthouse</a>
+    <aside class="demo-banner" id="demo-banner" aria-label="Demo mode">
       <strong>Demo — sample data, nothing is saved</strong>
       <span class="demo-actions"><button type="button" id="reset-demo">Reset demo</button><a href="/" id="start-real">Start for real</a></span>
     </aside>
     <header class="site-header">
       <a class="wordmark" href="/" aria-label="The Last Light, home"><span aria-hidden="true" class="wordmark-mark">✦</span><span>The Last Light</span></a>
-      <nav aria-label="Site"><a href="/demo/">Demo</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
+      <nav aria-label="Site"><a href="/demo/" aria-current="page">Demo</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
     </header>
-
     <main id="main">
-      <h1 tabindex="-1">Finish an idle story in one sitting</h1>
-      <p class="deck">For idle-game fans who want a clear ending without ads or endless resets.</p>
-      <section class="game-toolbar" id="game-toolbar" aria-label="Game tools" hidden>
+      <h1 tabindex="-1">Guide the lighthouse through Act II</h1>
+      <p class="deck">A working lamp, six bought repairs, and three cutters waiting offshore.</p>
+      <section class="game-toolbar" id="game-toolbar" aria-label="Game tools">
         <button type="button" class="text-button" id="help-button">Open instructions</button>
         <button type="button" class="text-button" id="sound-button" aria-pressed="false">Turn motion off</button>
         <button type="button" class="text-button" id="save-button">Copy save</button>
       </section>
       <div id="game" aria-busy="true"></div>
-
-      <div id="landing-details">
-        <section class="landing-section" aria-labelledby="how-title">
-          <p class="eyebrow">Three entries in the log</p>
-          <h2 id="how-title">How it works</h2>
-          <ol class="how-list">
-            <li><strong>Automate the lamp.</strong><span>Press the main action, then buy repairs that produce light automatically.</span></li>
-            <li><strong>Aim the beam.</strong><span>Choose how much light searches the sea and how much powers the lamp.</span></li>
-            <li><strong>Repair storm damage.</strong><span>Keep the tower standing until the third act ends at dawn.</span></li>
-          </ol>
-        </section>
-        <section class="landing-section limits-section" aria-labelledby="limits-title">
-          <p class="eyebrow">A finite night</p>
-          <h2 id="limits-title">What the game does not do</h2>
-          <p>There are no accounts, ads, purchases, daily rewards, or endless resets.</p>
-          <p>The browser saves progress automatically. Closing the tab earns nothing.</p>
-          <p>After the first visit, the game reloads without a network connection.</p>
-        </section>
-      </div>
+      <div id="landing-details" hidden></div>
     </main>
-
     <footer class="site-footer">
       <p>Finish a 35–50-minute idle game with no endless resets.</p>
       <nav aria-label="Footer"><a href="/">Home</a><a href="/demo/">Demo</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
       <p>Built by Param Factory · Build 1.1.0 · Generated illustration</p>
     </footer>
-
     <div class="route-announcer visually-hidden" id="route-announcer" aria-live="polite" aria-atomic="true"></div>
     <div class="connection-note" id="offline-note" role="status" hidden><span aria-hidden="true">×</span> Offline. Your progress remains in this browser.</div>
     <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-
     <dialog id="help-dialog" aria-labelledby="help-title">
       <form method="dialog" class="dialog-sheet">
         <button class="dialog-close" value="close" aria-label="Close instructions">×</button>
-        <p class="eyebrow">Instructions</p>
-        <h2 id="help-title">Reach dawn in three acts</h2>
+        <p class="eyebrow">Instructions</p><h2 id="help-title">Reach dawn in three acts</h2>
         <ol>
           <li><strong>Automate the lamp.</strong> Press the main action, then buy repairs that produce light automatically.</li>
           <li><strong>Check each act's goal.</strong> The goal and progress appear above the main action.</li>
@@ -90,16 +66,13 @@
         <button class="button button-ink" value="close">Return to the log</button>
       </form>
     </dialog>
-
     <dialog id="restart-dialog" aria-labelledby="restart-title">
       <form method="dialog" class="dialog-sheet">
-        <p class="eyebrow">Erase this log?</p>
-        <h2 id="restart-title">Begin the night again</h2>
-        <p>Your current device save will be replaced. Copy a save link first if you want to return to it.</p>
-        <div class="dialog-actions"><button class="button button-quiet" value="cancel">Keep current save</button><button class="button button-danger" id="confirm-restart" value="confirm">Erase and restart</button></div>
+        <p class="eyebrow">Reset this sample?</p><h2 id="restart-title">Restore the sample lighthouse</h2>
+        <p>This resets only the sample. Your personal game remains unchanged.</p>
+        <div class="dialog-actions"><button class="button button-quiet" value="cancel">Keep current sample</button><button class="button button-danger" id="confirm-restart" value="confirm">Reset demo</button></div>
       </form>
     </dialog>
-
     <noscript><p class="noscript">The lighthouse mechanism needs JavaScript to run. Enable it, then reload this page.</p></noscript>
     <script type="module" src="/src/navigation.ts"></script>
     <script type="module" src="/src/main.ts"></script>

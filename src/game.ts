@@ -1,5 +1,5 @@
 export const GAME_VERSION = 1;
-export const ACT_ONE_GOAL = 9000;
+export const ACT_ONE_GOAL = 9300;
 export const ACT_TWO_GOAL = 2000;
 export const STORM_DURATION = 900;
 
@@ -68,6 +68,34 @@ export const initialState = (): GameState => ({
   clicks: 0,
   repairs: 0,
   log: []
+});
+
+export const demoState = (): GameState => ({
+  version: GAME_VERSION,
+  started: true,
+  finished: false,
+  act: 2,
+  light: 3400,
+  signals: 940,
+  supplies: 0,
+  integrity: 100,
+  stormElapsed: 0,
+  beamMode: 50,
+  upgrades: ['wick', 'weight', 'lens', 'pump', 'flags', 'shutter'],
+  elapsedMs: 22 * 60 * 1000,
+  startedAt: Date.now() - 22 * 60 * 1000,
+  clicks: 146,
+  repairs: 0,
+  log: [
+    { at: 0, text: '21:10 — The harbor wire is dead. The old lens is dark.' },
+    { at: 160000, text: 'The wick takes. A small flame, but a willing one.' },
+    { at: 390000, text: 'The clockwork turns again after nineteen silent years.' },
+    { at: 680000, text: 'Each prism finds the next. The light gathers itself.' },
+    { at: 920000, text: 'Oil climbs the copper line. The beam no longer needs my hand.' },
+    { at: 1080000, text: '22:02 — Light reaches the shoals. Far out, three bells answer.' },
+    { at: 1170000, text: 'Red over white: lighthouse awake. Is anyone watching?' },
+    { at: 1260000, text: 'The shutter gives the light a language: long, short, long.' }
+  ]
 });
 
 export function startGame(state: GameState, now = Date.now()): GameState {
@@ -175,7 +203,7 @@ export function advanceAct(state: GameState): GameState {
     return {
       ...state,
       act: 2,
-      light: Math.max(120, state.light - 8500),
+      light: Math.max(120, state.light - (ACT_ONE_GOAL - 500)),
       log: [...state.log, { at: state.elapsedMs, text: '22:02 — Light reaches the shoals. Far out, three bells answer.' }]
     };
   }

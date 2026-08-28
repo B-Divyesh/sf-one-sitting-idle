@@ -1,19 +1,28 @@
 import {
   ACT_ONE_GOAL, ACT_TWO_GOAL, STORM_DURATION, UPGRADES, GameState, Upgrade, actProgress,
-  advanceAct, buyUpgrade, canAdvance, decodeSave, encodeSave, formatDuration, initialState,
+  advanceAct, buyUpgrade, canAdvance, decodeSave, demoState, encodeSave, formatDuration, initialState,
   lightRate, primaryAction, signalRate, startGame, tick
 } from './game';
 
-const STORAGE_KEY = 'last-light-save-v1';
+const REAL_STORAGE_KEY = 'last-light-save-v1';
+const DEMO_STORAGE_KEY = 'demo:last-light-save-v1';
+const isDemo = location.pathname.replace(/\/$/, '') === '/demo' || new URLSearchParams(location.search).get('demo') === '1';
+const STORAGE_KEY = isDemo ? DEMO_STORAGE_KEY : REAL_STORAGE_KEY;
+const MOTION_KEY = isDemo ? 'demo:last-light-motion' : 'last-light-motion';
+const SITE_ORIGIN = 'https://one-sitting-idle.sociobot.in';
 const game = document.querySelector<HTMLDivElement>('#game')!;
 const toast = document.querySelector<HTMLDivElement>('#toast')!;
 const offlineNote = document.querySelector<HTMLDivElement>('#offline-note')!;
 const helpDialog = document.querySelector<HTMLDialogElement>('#help-dialog')!;
 const restartDialog = document.querySelector<HTMLDialogElement>('#restart-dialog')!;
 const soundButton = document.querySelector<HTMLButtonElement>('#sound-button')!;
+const landingDetails = document.querySelector<HTMLElement>('#landing-details')!;
+const demoBanner = document.querySelector<HTMLElement>('#demo-banner')!;
+const gameToolbar = document.querySelector<HTMLElement>('#game-toolbar')!;
+const pageTitle = document.querySelector<HTMLHeadingElement>('h1')!;
 let errorMessage = '';
 let state = loadState();
-let stillWaters = localStorage.getItem('last-light-still') === 'true' || matchMedia('(prefers-reduced-motion: reduce)').matches;
+let stillWaters = localStorage.getItem(MOTION_KEY) === 'true' || matchMedia('(prefers-reduced-motion: reduce)').matches;
 let lastFrame = performance.now();
 let lastRender = 0;
 let lastSave = 0;
@@ -42,6 +51,11 @@ function loadState(): GameState {
   } catch {
     errorMessage = 'The local save could not be read. You can still start a fresh log and copy a save link.';
   }
+  if (isDemo) {
+    const seeded = demoState();
+    localStorage.setItem(DEMO_STORAGE_KEY, encodeSave(seeded));
+    return seeded;
+  }
   return initialState();
 }
 
@@ -69,9 +83,22 @@ function formatNumber(value: number): string {
 
 function render(): void {
   game.setAttribute('aria-busy', 'false');
-  soundButton.textContent = `Still waters: ${stillWaters ? 'on' : 'off'}`;
+  soundButton.textContent = stillWaters ? 'Turn motion on' : 'Turn motion off';
   soundButton.setAttribute('aria-pressed', String(stillWaters));
   document.body.classList.toggle('still-waters', stillWaters);
+  document.body.classList.toggle('demo-mode', isDemo);
+  demoBanner.hidden = !isDemo;
+  gameToolbar.hidden = !state.started;
+  landingDetails.hidden = isDemo || state.started;
+  if (isDemo) {
+    pageTitle.textContent = 'Guide the lighthouse through Act II';
+    document.title = 'Demo — The Last Light';
+    setMeta('link[rel="canonical"]', 'href', `${SITE_ORIGIN}/demo/`);
+    setMeta('meta[property="og:title"]', 'content', 'Demo — The Last Light');
+    setMeta('meta[property="og:url"]', 'content', `${SITE_ORIGIN}/demo/`);
+    setMeta('meta[name="twitter:title"]', 'content', 'Demo — The Last Light');
+    document.querySelector<HTMLAnchorElement>('.site-header a[href="/demo/"]')?.setAttribute('aria-current', 'page');
+  }
   uiSignature = getUiSignature();
 
   if (!state.started) {
@@ -122,12 +149,22 @@ function renderCover(): string {
         <span class="cover-stamp">LOG 7B · NORTH REACH</span>
       </div>
       <div class="cover-copy">
-        <p class="eyebrow">A one-sitting idle story · 35–50 min</p>
-        <h2 id="cover-title">The last keeper left the lamp in pieces.</h2>
-        <p>Tonight, three cutters are due through the shoals. Restore the light, teach it to speak, and keep it burning until dawn.</p>
-        <blockquote>“A proper mechanism should know when its work is done.”<br><cite>— margin note, unsigned</cite></blockquote>
-        <button class="button button-primary button-large" id="begin-button">Open the keeper's log <span aria-hidden="true">→</span></button>
-        <p class="fine-print"><span aria-hidden="true">✓</span> Saves on this device · No account · No ads · No offline earnings</p>
+        <div class="hero-actions">
+          <a class="button button-primary button-large" href="/?demo=1">Try it with sample data <span aria-hidden="true">→</span></a>
+          <button class="button button-quiet" id="begin-button">Start a new game</button>
+        </div>
+        <p class="action-explanation">Opens a working lighthouse midway through Act II.</p>
+        <ul class="hero-facts" aria-label="Game facts">
+          <li>35–50 minutes</li>
+          <li>Saves only in this browser</li>
+          <li>Free; no ads or purchases</li>
+        </ul>
+        <div class="cover-story">
+          <p class="eyebrow">The keeper's log</p>
+          <h2 id="cover-title">The last keeper left the lamp in pieces.</h2>
+          <p>Restore the light, guide three cutters home, and keep the tower standing until dawn.</p>
+          <blockquote>“A proper mechanism should know when its work is done.”<br><cite>— margin note, unsigned</cite></blockquote>
+        </div>
       </div>
     </section>`;
 }
@@ -184,7 +221,7 @@ function renderGame(): string {
         ${canAdvance(state) ? `<div class="chapter-ready"><p><span aria-hidden="true">✦</span> The next page is ready.</p><button class="button button-ink" id="advance-button">${advanceLabel()} <span aria-hidden="true">→</span></button></div>` : ''}
 
         <section class="repairs" aria-labelledby="repairs-title">
-          <div class="section-heading"><div><p class="eyebrow">Automation notes</p><h3 id="repairs-title">Repairs & arrangements</h3></div><span class="pencil-note">Keys 2–4</span></div>
+          <div class="section-heading"><div><p class="eyebrow">Automation notes</p><h3 id="repairs-title">Repairs</h3></div><span class="pencil-note">Keys 2–4</span></div>
           <ul class="upgrade-list">${upgrades.map((upgrade, index) => renderUpgrade(upgrade, index)).join('')}</ul>
         </section>
       </section>
@@ -251,7 +288,7 @@ function renderEnding(): string {
       <button class="button button-primary" id="ending-share">Copy my ending</button>
       <button class="button button-quiet" id="restart-button">Play this night again</button>
     </div>
-    <p class="fine-print">Finished in ${minutes} minute${minutes === 1 ? '' : 's'}. This is the complete first episode. No prestige waits behind it.</p>
+    <p class="fine-print">Finished in ${minutes} minute${minutes === 1 ? '' : 's'}. The story ends after Act III. No endless resets follow.</p>
   </section>`;
 }
 
@@ -362,7 +399,7 @@ async function copySave(): Promise<void> {
 }
 
 async function shareEnding(): Promise<void> {
-  const text = `I kept The Last Light burning to dawn in ${formatDuration(state.elapsedMs)} with ${Math.ceil(state.integrity)}% of the tower standing. A complete one-sitting idle story.`;
+  const text = `I kept The Last Light burning to dawn in ${formatDuration(state.elapsedMs)} with ${Math.ceil(state.integrity)}% of the tower standing.`;
   try {
     await navigator.clipboard.writeText(`${text} ${location.origin}`);
     showToast('Ending copied.');
@@ -379,12 +416,27 @@ document.querySelector('#help-button')?.addEventListener('click', () => helpDial
 document.querySelector('#save-button')?.addEventListener('click', copySave);
 soundButton.addEventListener('click', () => {
   stillWaters = !stillWaters;
-  localStorage.setItem('last-light-still', String(stillWaters));
+  localStorage.setItem(MOTION_KEY, String(stillWaters));
   render();
 });
+document.querySelector('#reset-demo')?.addEventListener('click', () => {
+  if (!isDemo) return;
+  state = demoState();
+  localStorage.setItem(DEMO_STORAGE_KEY, encodeSave(state));
+  render();
+  showToast('Sample lighthouse reset to mid-Act II.');
+});
+document.querySelector('#start-real')?.addEventListener('click', (event) => {
+  if (!isDemo) return;
+  event.preventDefault();
+  localStorage.removeItem(DEMO_STORAGE_KEY);
+  localStorage.removeItem('demo:last-light-motion');
+  location.assign('/');
+});
 document.querySelector('#confirm-restart')?.addEventListener('click', () => {
-  state = initialState();
+  state = isDemo ? demoState() : initialState();
   localStorage.removeItem(STORAGE_KEY);
+  if (isDemo) localStorage.setItem(DEMO_STORAGE_KEY, encodeSave(state));
   render();
   window.scrollTo({ top: 0, behavior: stillWaters ? 'auto' : 'smooth' });
 });
@@ -432,6 +484,10 @@ function loop(now: number): void {
 updateConnection();
 render();
 requestAnimationFrame(loop);
+
+function setMeta(selector: string, attribute: string, value: string): void {
+  document.querySelector(selector)?.setAttribute(attribute, value);
+}
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => undefined));

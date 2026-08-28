@@ -1,5 +1,5 @@
-const CACHE = 'last-light-v3';
-const SHELL = ['/', '/privacy/', '/terms/', '/favicon.svg', '/assets/lighthouse-notebook-960.avif', '/assets/lighthouse-notebook-960.webp', '/assets/lighthouse-notebook.jpg'];
+const CACHE = 'last-light-v4';
+const SHELL = ['/', '/demo/', '/privacy/', '/terms/', '/404.html', '/favicon.svg', '/apple-touch-icon.png', '/assets/the-last-light-social.jpg', '/assets/lighthouse-notebook-960.avif', '/assets/lighthouse-notebook-960.webp', '/assets/lighthouse-notebook.jpg'];
 
 async function precacheShell() {
   const cache = await caches.open(CACHE);

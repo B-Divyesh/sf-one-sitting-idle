@@ -61,24 +61,24 @@ and progress values accompany it.
 
 - The largest available rust button is the immediate manual verb: **Trim the
   wick**, **Send a signal**, then **Brace the light**.
-- Automation is purchased as checklist entries. Available rows have an empty
+- Repairs are purchased as checklist entries. Available rows have an empty
   square; bought rows become a struck, checked note. Locked rows explain the
   exact prerequisite instead of hiding.
 - Resource totals sit on an instrument strip and update immediately. Rate
   deltas briefly take lamp yellow. Keyboard shortcuts mirror the log's numbered
-  annotations: `1` primary action, `2–4` buy visible upgrades, `S` save/share,
+  annotations: `1` main action, `2–4` buy visible repairs, `S` save/share,
   `?` instructions.
 - Act changes resemble turning a page: old rules stay summarized in the log,
   the active heading advances, and one new mechanic is introduced plainly.
 - A persistent session clock and explicit three-mark act track keep the promised
-  endpoint visible throughout. No prestige, streak, reward calendar, or offline
+  endpoint visible throughout. No endless reset, streak, reward calendar, or offline
   earnings.
 
 ## Motion
 
 - Controls press 2px into their offset shadow (120ms). New log lines fade and
   slide upward by 6px over 240ms. The beam sweeps slowly only while lit, as
-  meaningful ambient feedback; it can be paused via **Still waters** and stops
+  meaningful ambient feedback; it can be paused via **Turn motion off** and stops
   when the tab is hidden.
 - Act transitions use one 450ms page-shift. Resource bumps use opacity/scale,
   never layout-affecting properties.
@@ -113,6 +113,9 @@ Prompt sheet:
   source image or artist name was used.
 - Source candidate and JSON prompt sidecar live in `assets/src/`; shipped WebP
   lives in `public/assets/` and is capped below 300 KB.
+- The 1200×630 social card and 180×180 touch icon are crops of that same
+  generated source, made locally with ImageMagick on 2026-08-28. They introduce
+  no new imagery or license source.
 - Remaining marks (lamp, compass, waves, check boxes) are original CSS/SVG line
   work authored for this repository.
 
