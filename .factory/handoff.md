@@ -1,5 +1,28 @@
 # Handoff — perfection loop round 1
 
+## Review 3 update
+
+**FAIL — no product code changed.** The seven-day independent re-review is in
+`.factory/review-3.md`.
+
+- Candidate reviewed: `c2ec5d5aea77bfe91a180ff26fac6a86f9a606f9`.
+  Documentation commit: `7ffc006804bd77d43f2fa5d797caabb3384d657b`.
+  The live asset hashes match the candidate build.
+- Fresh live 390 px phone and desktop checks passed for the plain first screen,
+  populated isolated demo, reset/exit isolation, invalid-save recovery,
+  offline reload, routes, legal pages, 404, keyboard, reduced motion, privacy,
+  and serious/critical Axe checks.
+- Clean checkout verification passed: `npm ci`, `npm test` (7/7), `npm run
+  build`, `npm run test:e2e` (44/44), and each of the 15 declared claim
+  commands run separately.
+- Two findings remain: the public “no daily rewards” assertion has no registry
+  entry or tagged claim test; and OG/Twitter descriptions say “lighthouse game”
+  rather than the required single term “35–50-minute idle game.”
+
+Do not call this product accepted until those two items are repaired and
+re-reviewed. The static product has no backend endpoints, so tenant isolation,
+health, restart persistence, and 429 checks do not apply.
+
 ## Review 2 update
 
 **PASS — no product code changed.** The independent adversarial review is in
