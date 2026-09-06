@@ -1,6 +1,6 @@
 # Copy audit
 
-Audited 2026-08-28 for the round-one polish. Counts split on spaces. This
+Audited 2026-09-06 for repair 3. Counts split on spaces. This
 includes the home first screen, landing sections, shared controls, dialogs,
 demo banner, ending, and README statements. No visitor-facing sentence exceeds
 22 words. No banned marketing word appears. The one product term is
@@ -30,11 +30,14 @@ sentence explains the sample action. They read aloud as one short instruction.
 | Copy | Words | Result |
 | --- | ---: | --- |
 | The Last Light — a 35–50-minute idle game | 6 | Pass |
+| Finish a 35–50-minute idle game in one sitting. | 8 | Pass |
+| Restore a lighthouse, guide three cutters home, and outlast the storm. | 11 | Pass |
+| Finish a 35–50-minute idle game with a clear ending and no ads. | 12 | Pass |
 | Home | 1 | Pass |
 | Demo | 1 | Pass |
 | Privacy | 1 | Pass |
 | Terms | 1 | Pass |
-| Built by Param Factory | 4 | Pass |
+| Built by Param Factory · Build 1.1.1 · Generated illustration | 8 | Pass |
 | Close instructions | 2 | Pass |
 | Reach dawn in three acts | 5 | Pass |
 | The goal and progress appear above the main action. | 9 | Pass |

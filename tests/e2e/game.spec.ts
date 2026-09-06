@@ -139,6 +139,37 @@ test('@claim:privacy-no-commerce the demo uses only same-origin requests and has
   await expect(page.locator('form[action*="login"], form[action*="signup"], [class*="advert"], [id*="purchase"]')).toHaveCount(0);
 });
 
+test('@claim:daily-rewards returning two calendar days later adds no reward or prompt', async ({ browser }) => {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'requestAnimationFrame', { value: () => 0 });
+  });
+  await page.goto('/demo/');
+  const saved = await page.evaluate((key) => localStorage.getItem(key), DEMO_KEY);
+  expect(saved).toBeTruthy();
+  expect(decodeSave(saved!).signals).toBe(940);
+  await page.close();
+
+  await context.addInitScript((offsetMs) => {
+    const returnedAt = Date.now() + offsetMs;
+    Object.defineProperty(Date, 'now', { value: () => returnedAt });
+    Object.defineProperty(window, 'requestAnimationFrame', { value: () => 0 });
+  }, 2 * 24 * 60 * 60 * 1000);
+  const returned = await context.newPage();
+  await returned.goto('/demo/');
+  expect(await returned.evaluate((key) => localStorage.getItem(key), DEMO_KEY)).toBe(saved);
+  expect(await returned.evaluate(() => Object.keys(localStorage).sort())).toEqual([DEMO_KEY]);
+  await expect(returned.getByText('940 / 2,000 bearings')).toBeVisible();
+  await expect(returned.locator('dialog[open]')).toHaveCount(0);
+  await expect(returned.getByRole('button', { name: /daily|reward|streak|claim|collect/i })).toHaveCount(0);
+
+  await returned.keyboard.press('1');
+  const resumed = await returned.evaluate((key) => localStorage.getItem(key), DEMO_KEY);
+  expect(decodeSave(resumed!).signals).toBe(947);
+  await context.close();
+});
+
 test('@claim:mobile-layout the first screen and every visible control fit a 390 px phone', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
@@ -233,6 +264,12 @@ test('direct routes expose complete metadata and unknown paths remain 404', asyn
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /the-last-light-social\.jpg$/);
     await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
     await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href', '/apple-touch-icon.png');
+  }
+  await page.goto('/');
+  for (const selector of ['meta[property="og:description"]', 'meta[name="twitter:description"]']) {
+    const description = await page.locator(selector).getAttribute('content');
+    expect(description).toContain('35–50-minute idle game');
+    expect(description).not.toContain('lighthouse game');
   }
   const missing = await request.get('/does-not-exist-review-1', { failOnStatusCode: false });
   expect(missing.status()).toBe(404);
