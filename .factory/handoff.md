@@ -1,56 +1,46 @@
-# Handoff — one-sitting-idle repair 3
+# Handoff — verification 3
 
 ## Outcome
 
-**PASS and deployed** at <https://one-sitting-idle.sociobot.in/>.
+**FAIL — do not accept this candidate yet.**
 
-- Implementation SHA: `33d4f41a2030e0afb57686ea254629f7e4cc852a`.
-- Verification report SHA: `863a6121a15db6b3961ad2228caee2c2a7e3ff40`.
-- Deployment ID: `880cd33d-abe3-4370-b5d8-e2ac809d2ad8`.
-- Full repair evidence and earlier-finding disposition:
-  `.factory/repair-3.md`.
+- Implementation reviewed: `33d4f41a2030e0afb57686ea254629f7e4cc852a`.
+- Documentation reviewed: `2102141068015bb6cc9d21296c27835b5b24cf18`.
+- Live URL: <https://one-sitting-idle.sociobot.in/>.
+- Full report: `.factory/verification-3.md`.
 
-The report and this handoff are documentation-only changes after the deployed
-implementation. The live `index.html` is byte-identical to the implementation
-build.
+The deployed home HTML is byte-identical to the implementation build. No
+product code was changed by this verification.
 
-## Work completed
+## What passed
 
-- Registered **The game has no daily rewards** as `daily-rewards`.
-- Added one outcome test that returns after two calendar days and verifies no
-  bonus economy, reward storage, prompt, or blocked play.
-- Standardized Open Graph, Twitter, and catalog copy on
-  **35–50-minute idle game**.
-- Added a rendered-page metadata regression check.
-- Updated the copy audit, catalog evidence, package version, and visible build
-  ID to 1.1.1.
-- Preserved the finite three-act game, isolated sample, local/save-link state,
-  original notebook visual system, accessibility behavior, and future season
-  terms.
-
-## Verification
-
-From clean clone `/tmp/one-sitting-idle-repair-3-clean.Xp13i4` at the
-implementation SHA:
+From a fresh detached clone at the implementation SHA:
 
 ```text
-npm ci                         PASS — 0 vulnerabilities
+npm ci                         PASS — 59 packages, 0 vulnerabilities
 npm test                       PASS — 7/7
 npm run build                  PASS — dist/ produced
 npm run test:e2e               PASS — 46/46
 16 declared claim commands     PASS — each run separately
 ```
 
-Cold HTTPS checks passed on fresh desktop and 390 px phone contexts for the
-first screen, sample population and label, reset/exit isolation, keyboard,
-focus, mobile targets, reduced motion, legal routes, designed 404, same-origin
-privacy, offline reload, and serious/critical Axe checks. Normal flows emitted
-no console or page errors.
+Fresh live desktop and 390 px phone checks passed for the first screen,
+populated isolated sample, persistent sample label, reset/exit isolation,
+keyboard/focus, mobile targets, reduced motion, accessibility, privacy,
+offline reload, legal pages, route titles, links, and designed HTTP 404.
+Normal flows had no console/page errors. `verify-url.sh` and live Axe scans
+passed. This static web product has no backend, SQLite, tenant, health,
+restart, or 429 behavior to verify.
 
-Lighthouse 13.4.1 scored 100 for Performance, Accessibility, Best Practices,
-and SEO. FCP and LCP were 0.9 s, TBT was 0 ms, and CLS was 0.
+## Remaining gap
 
-Run locally:
+One major content finding remains: public landing, demo, legal, and 404 copy
+uses prohibited decorative keeper/log lore and a non-informational quotation.
+This violates the supplied plain-words contract. Replace it with direct labels
+and instructions, update the copy audit to enforce that rule, and rerun
+verification 3.
+
+## Run locally
 
 ```bash
 npm ci
@@ -59,20 +49,3 @@ npm run build
 npm run test:e2e
 npm run test:claims
 ```
-
-Deploy with:
-
-```bash
-/opt/fleet/lib/deploy-static.sh one-sitting-idle dist
-```
-
-Evidence is in `/work/.evidence/`, including the required
-`catalog-description.txt`, live screenshots, Lighthouse JSON, and
-`repair-3-verify/` output.
-
-## Known gaps
-
-None. No current or earlier finding remains. This is a static product, so
-backend, SQLite, tenant, health, restart, and 429 checks do not apply. No paid
-offer is currently advertised or available; future one-time season terms are
-unchanged.
